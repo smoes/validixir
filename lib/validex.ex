@@ -1,0 +1,2 @@
+defmodule Validex do
+end
