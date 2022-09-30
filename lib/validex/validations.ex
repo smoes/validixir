@@ -4,7 +4,7 @@ defmodule Validex.Validations do
   functionality.
   """
 
-  alias Validex.Core, as: Core
+  alias Validex, as: Core
   alias Validex.Success, as: Success
   alias Validex.Failure, as: Failure
   alias Validex.Error, as: Error
@@ -141,8 +141,8 @@ defmodule Validex.Validations do
 
   ## Examples
 
-      iex> Validex.Validations.function(&Validex.Core.pure/1)
-      %Validex.Success{candidate: &Validex.Core.pure/1}
+      iex> Validex.Validations.function(&Validex.pure/1)
+      %Validex.Success{candidate: &Validex.pure/1}
 
       iex> Validex.Validations.function(12)
       %Validex.Failure{errors: [
