@@ -1,4 +1,13 @@
 defmodule Validex.Failure do
+  @moduledoc """
+  Module containing data definition and functionality concering a Failure.
+  An Failure is a struct representing a failed validation.
+
+  An Failure consists of the following:
+
+  * A list of Errors, displaying multiple causes for the validation to fail.
+  """
+
   alias __MODULE__
   alias Validex.Error, as: Error
 

@@ -1,5 +1,11 @@
 defmodule Validex.Success do
   @moduledoc """
+  Module containing data definition and functionality concering a Success.
+  An Succes is a struct representing a successful validation.
+
+  A Success consists of the following:
+
+  * A candidate, representing the value that was validated.
   """
 
   alias __MODULE__

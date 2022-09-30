@@ -1,4 +1,15 @@
 defmodule Validex.Error do
+  @moduledoc """
+  Module containing data definition and functionality concering an Error.
+  An Error is a struct representing a concrete error in validation.
+
+  An Error consists of the following:
+
+  * A candidate, representing the value that was validated
+  * A message, describing the cause of the Error
+  * A context in which the Error occured, e.g. a module or step
+  """
+
   alias __MODULE__
 
   @type t :: %Error{}

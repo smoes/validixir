@@ -1,7 +1,6 @@
 defmodule Validex do
-
   @moduledoc """
-  Documentation for `Validex`.
+  Module containing all basic functionality needed for validation.
   """
 
   # TODO: Module doc
