@@ -1,6 +1,9 @@
 # Validex
 
-**TODO: Add description**
+![Tests](https://github.com/smoes/validex/actions/workflows/main.yaml/badge.svg)
+
+Validex brings powerful and reusable applicative validation to Elixir.
+
 
 ## Installation
 
