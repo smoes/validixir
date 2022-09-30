@@ -135,29 +135,106 @@ defmodule Validex.Core do
   def seq(f1 = %Failure{}, _), do: f1
   def seq(%Success{candidate: f}, validation_result), do: map_success(validation_result, f)
 
+  @doc !"""
+  Essentially a monadic bind.
+  """
   @spec bind(validation_result_t, (any() -> any())) :: validation_result_t
   defp bind(failure = %Failure{}, _), do: failure
   defp bind(%Success{candidate: candidate}, f), do: f.(candidate)
 
-  @spec and_then(validation_result_t, (any() -> any())) :: validation_result_t
+  @doc ~S"""
+  Takes a `validation_result_t()` and a functions that takes the candidate
+  in case of a success and returns a `validation_result_t()` again.
+  This function is used to chain validations.
+
+  ## Examples
+
+      iex> Validex.Success.make(0) |> Validex.Core.and_then(fn x -> Validex.Success.make(x + 1) end)
+      %Validex.Success{candidate: 1}
+
+      iex> Validex.Failure.make([]) |> Validex.Core.and_then(fn x -> x + 1 end)
+      %Validex.Failure{errors: []}
+  """
+  @spec and_then(validation_result_t, (any() -> validation_result_t)) :: validation_result_t
   def and_then(validation_result, f), do: bind(validation_result, f)
 
-  @spec validation(function(), [validation_result_t]) :: validation_result_t
-  def validation(result_f, validations) do
+  @doc ~S"""
+  Takes a function that is called iff all validation results are Successes. The call
+  parameters are then the candidates in the respective order. Returns a validation success then,
+  with the candidate being the return value of this function.
+  If there is at least one failure, errors get accumulated and a validation failure is returned.
+
+  ## Examples
+
+      iex> Validex.Core.validate(fn a, b -> {a, b} end, [Validex.Success.make(1), Validex.Success.make(2)])
+      %Validex.Success{candidate: {1,2}}
+
+      iex> error1 = Validex.Error.make(:hello, "not allowed", nil)
+      iex> error2 = Validex.Error.make(:world, "not allowed", nil)
+      iex> failure1 = Validex.Failure.make([error1])
+      iex> failure2 = Validex.Failure.make([error2])
+      iex> Validex.Core.validate(fn a, b -> {a, b} end, [failure1, failure2])
+      %Validex.Failure{
+         errors: [Validex.Error.make(:hello, "not allowed", nil),
+                  Validex.Error.make(:world, "not allowed", nil)]}
+  """
+  @spec validate(function(), [validation_result_t]) :: validation_result_t
+  def validate(result_f, validations) do
     pure_curried = curry(result_f) |> pure()
-    Enum.reduce(validations, pure_curried, &seq/2)
+    Enum.reduce(validations, pure_curried, fn a, b -> seq(b, a) end)
   end
 
+  @doc ~S"""
+  Takes a list of validation results and returns a validation success containing list
+  of all candidates, if all validation results are successes. Else all failures are
+  combined and a validation failure is returned.
+
+  ## Examples
+
+      iex> Validex.Core.sequence([Validex.Success.make(1), Validex.Success.make(2)])
+      %Validex.Success{candidate: [1,2]}
+
+      iex> error1 = Validex.Error.make(:hello, "not allowed", nil)
+      iex> error2 = Validex.Error.make(:world, "not allowed", nil)
+      iex> failure1 = Validex.Failure.make([error1])
+      iex> failure2 = Validex.Failure.make([error2])
+      iex> Validex.Core.sequence([failure1, failure2])
+      %Validex.Failure{
+         errors: [Validex.Error.make(:hello, "not allowed", nil),
+                  Validex.Error.make(:world, "not allowed", nil)]}
+  """
   @spec sequence([validation_result_t]) :: validation_result_t
   def sequence([]), do: pure([])
   def sequence([result]), do: result |> map_success(fn x -> [x] end)
-
   def sequence([x | xs]),
-    do: validation(fn a, b -> [a | b] end, [x, sequence(xs)])
+    do: validate(fn a, b -> [a | b] end, [x, sequence(xs)])
 
   @type validation_fun_t :: (any() -> validation_result_t)
 
-  @spec sequence_of([validation_result_t], validation_fun_t, [{:label, any()}]) ::
+  @doc ~S"""
+  Does the same as `Validex.Core.sequence/1` but applies a validation function
+  to all candidates first. Takes an optional label to augment the results, including
+  the index.
+
+  ## Examples
+
+      iex> success_fn = fn c -> Validex.Success.make(c) end
+      iex> Validex.Core.sequence_of([1, 2], success_fn)
+      %Validex.Success{candidate: [1,2]}
+
+      iex> failure_fn = fn c -> [Validex.Error.make(c, "not allowed", nil)] |> Validex.Failure.make() end
+      iex> Validex.Core.sequence_of([:hello, :world], failure_fn)
+      %Validex.Failure{
+          errors: [Validex.Error.make(:hello, "not allowed", {{:seq, 0}, nil}),
+                   Validex.Error.make(:world, "not allowed", {{:seq, 1}, nil})]}
+
+      iex> failure_fn = fn c -> [Validex.Error.make(c, "not allowed", nil)] |> Validex.Failure.make() end
+      iex> Validex.Core.sequence_of([:hello, :world], failure_fn, label: :test)
+      %Validex.Failure{
+          errors: [Validex.Error.make(:hello, "not allowed", {{:test, 0}, nil}),
+                   Validex.Error.make(:world, "not allowed", {{:test, 1}, nil})]}
+  """
+  @spec sequence_of([any()], validation_fun_t, [{:label, any()}]) ::
           validation_result_t
   def sequence_of(candidates, validation_f, opts \\ []) do
     candidates
@@ -165,7 +242,7 @@ defmodule Validex.Core do
     |> Enum.map(fn {candidate, idx} ->
       validation_f.(candidate)
       |> map_failure(fn error ->
-        additional_label = {opts[:label] or :seq, idx}
+        additional_label = {opts[:label] || :seq, idx}
         Error.augment_label(error, additional_label)
       end)
     end)
@@ -176,29 +253,27 @@ defmodule Validex.Core do
           {:error, :no_validators}
           | {:error, :more_than_one_success}
           | {:ok, [validation_result_t]}
-  @spec validate_choice(any(), [validation_fun_t]) :: validate_choice_return_t
-  def validate_choice(_, []), do: {:error, :no_validators}
 
-  def validate_choice(candidate, validation_fs) do
-    validated = Enum.map(validation_fs, fn validation_f -> validation_f.(candidate) end)
-    successes = Enum.filter(validated, &Success.success?/1)
+  @doc ~S"""
+  Applies a list of validation functions to a candidate.
+  Returns a success containing the candidate if each validation function returns a success.
+  Else returns a validation failure containing errors of each failed validation.
 
-    cond do
-      Enum.count(successes) == 1 ->
-        {:ok, hd(successes)}
+  Takes an optional label as in `Validex.Core.sequence_of/3`.
 
-      Enum.count(successes) == 0 ->
-        ret =
-          Enum.filter(validated, &Failure.failure?/1)
-          |> Enum.reduce(&Failure.combine/2)
+  ## Examples
 
-        {:ok, ret}
+      iex> success_fn_1 = fn c -> Validex.Success.make(c) end
+      iex> success_fn_2 = fn _ -> Validex.Success.make(12) end
+      iex> Validex.Core.validate_all([success_fn_1, success_fn_2], 1)
+      %Validex.Success{candidate: 1}
 
-      :else ->
-        {:error, :more_than_one_success}
-    end
-  end
-
+      iex> failure_fn = fn c -> [Validex.Error.make(c, "not allowed", nil)] |> Validex.Failure.make() end
+      iex> success_fn = fn _ -> Validex.Success.make(12) end
+      iex> Validex.Core.validate_all([failure_fn, success_fn], :hello)
+      %Validex.Failure{
+          errors: [Validex.Error.make(:hello, "not allowed", {{:seq, 0}, nil})]}
+  """
   @type validate_all_return_t :: {:ok, validation_result_t} | {:error, :no_validators}
   @spec validate_all([validation_fun_t], any(), [{:label, any()}]) :: validate_all_return_t
   def validate_all(validation_fs, candidate, opts \\ [])
@@ -206,28 +281,20 @@ defmodule Validex.Core do
 
   def validate_all(validation_fs, candidate, opts) do
     validated =
-      Enum.map(validation_fs, fn validation_f ->
+      validation_fs
+      |> Enum.with_index()
+      |> Enum.map(fn {validation_f, idx} ->
         validation_f.(candidate)
+        |> map_failure(fn error ->
+          additional_label = {opts[:label] || :seq, idx}
+          Error.augment_label(error, additional_label)
+        end)
       end)
+      |> sequence
 
-    if Enum.all?(validated, &Success.success?/1) do
-      {:ok, pure(candidate)}
-    else
-      failure =
-        validated
-        |> Enum.filter(&Failure.failure?/1)
-        |> Enum.reduce(&Failure.combine/2)
-
-      if opts[:label] do
-        ret =
-          Failure.map(failure, fn error ->
-            Error.with_label(error, opts[:label])
-          end)
-
-        {:ok, ret}
-      else
-        {:ok, failure}
-      end
+    case validated do
+      %Validex.Success{} -> Validex.Success.make(candidate)
+      %Validex.Failure{} -> validated
     end
   end
 end
