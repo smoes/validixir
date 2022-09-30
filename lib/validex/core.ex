@@ -129,6 +129,7 @@ defmodule Validex.Core do
   """
   @spec augment_contexts(validation_result_t(), any()) :: validation_result_t()
   def augment_contexts(s = %Success{}, _), do: s
+
   def augment_contexts(f = %Failure{}, additional_context),
     do: map_failure(f, fn error -> Error.augment_context(error, additional_context) end)
 
@@ -153,6 +154,7 @@ defmodule Validex.Core do
   """
   @spec augment_messages(validation_result_t(), any()) :: validation_result_t()
   def augment_messages(s = %Success{}, _), do: s
+
   def augment_messages(f = %Failure{}, additional_message),
     do: map_failure(f, fn error -> Error.augment_message(error, additional_message) end)
 
@@ -236,8 +238,8 @@ defmodule Validex.Core do
   def seq(%Success{candidate: f}, validation_result), do: map_success(validation_result, f)
 
   @doc !"""
-  Essentially a monadic bind.
-  """
+       Essentially a monadic bind.
+       """
   @spec bind(validation_result_t, (any() -> any())) :: validation_result_t
   defp bind(failure = %Failure{}, _), do: failure
   defp bind(%Success{candidate: candidate}, f), do: f.(candidate)
@@ -302,6 +304,7 @@ defmodule Validex.Core do
   @spec sequence([validation_result_t]) :: validation_result_t
   def sequence([]), do: pure([])
   def sequence([result]), do: result |> map_success(fn x -> [x] end)
+
   def sequence([x | xs]),
     do: validate(fn a, b -> [a | b] end, [x, sequence(xs)])
 
@@ -362,6 +365,7 @@ defmodule Validex.Core do
   @type validate_all_return_t :: {:ok, validation_result_t} | {:error, :no_validators}
   @spec validate_all([validation_fun_t], any()) :: validate_all_return_t
   def validate_all([], _), do: {:error, :no_validators}
+
   def validate_all(validation_fs, candidate) do
     validated =
       validation_fs
