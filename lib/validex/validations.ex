@@ -35,7 +35,7 @@ defmodule Validex.Validations do
 
       iex> Validex.Validations.atom(12)
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: 12, message: :not_an_atom, label: Validex.Validations}
+          %Validex.Error{candidate: 12, message: :not_an_atom, context: Validex.Validations}
       ]}
 
   """
@@ -56,7 +56,7 @@ defmodule Validex.Validations do
 
       iex> Validex.Validations.bitstring(12)
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: 12, message: :not_a_bitstring, label: Validex.Validations}
+          %Validex.Error{candidate: 12, message: :not_a_bitstring, context: Validex.Validations}
       ]}
 
   """
@@ -74,7 +74,7 @@ defmodule Validex.Validations do
 
       iex> Validex.Validations.binary(<<1::3>>)
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: <<1::3>>, message: :not_a_binary, label: Validex.Validations}
+          %Validex.Error{candidate: <<1::3>>, message: :not_a_binary, context: Validex.Validations}
       ]}
 
   """
@@ -92,7 +92,7 @@ defmodule Validex.Validations do
 
       iex> Validex.Validations.boolean(nil)
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: nil, message: :not_a_boolean, label: Validex.Validations}
+          %Validex.Error{candidate: nil, message: :not_a_boolean, context: Validex.Validations}
       ]}
 
   """
@@ -110,7 +110,7 @@ defmodule Validex.Validations do
 
       iex> Validex.Validations.exception(%{})
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: %{}, message: :not_an_exception, label: Validex.Validations}
+          %Validex.Error{candidate: %{}, message: :not_an_exception, context: Validex.Validations}
       ]}
 
   """
@@ -128,7 +128,7 @@ defmodule Validex.Validations do
 
       iex> Validex.Validations.float(12)
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: 12, message: :not_a_float, label: Validex.Validations}
+          %Validex.Error{candidate: 12, message: :not_a_float, context: Validex.Validations}
       ]}
 
   """
@@ -146,7 +146,7 @@ defmodule Validex.Validations do
 
       iex> Validex.Validations.function(12)
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: 12, message: :not_a_function, label: Validex.Validations}
+          %Validex.Error{candidate: 12, message: :not_a_function, context: Validex.Validations}
       ]}
 
   """
@@ -164,7 +164,7 @@ defmodule Validex.Validations do
 
       iex> Validex.Validations.integer(12.2)
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: 12.2, message: :not_an_integer, label: Validex.Validations}
+          %Validex.Error{candidate: 12.2, message: :not_an_integer, context: Validex.Validations}
       ]}
 
   """
@@ -182,12 +182,12 @@ defmodule Validex.Validations do
 
       iex> Validex.Validations.pos_integer(0)
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: 0, message: :not_a_positive_integer, label: Validex.Validations}
+          %Validex.Error{candidate: 0, message: :not_a_positive_integer, context: Validex.Validations}
       ]}
 
       iex> Validex.Validations.pos_integer(-2)
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: -2, message: :not_a_positive_integer, label: Validex.Validations}
+          %Validex.Error{candidate: -2, message: :not_a_positive_integer, context: Validex.Validations}
       ]}
   """
   @spec pos_integer(any()) :: Core.validation_result_t()
@@ -204,12 +204,12 @@ defmodule Validex.Validations do
 
       iex> Validex.Validations.neg_integer(0)
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: 0, message: :not_a_negative_integer, label: Validex.Validations}
+          %Validex.Error{candidate: 0, message: :not_a_negative_integer, context: Validex.Validations}
       ]}
 
       iex> Validex.Validations.neg_integer(2)
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: 2, message: :not_a_negative_integer, label: Validex.Validations}
+          %Validex.Error{candidate: 2, message: :not_a_negative_integer, context: Validex.Validations}
       ]}
   """
   @spec neg_integer(any()) :: Core.validation_result_t()
@@ -229,7 +229,7 @@ defmodule Validex.Validations do
 
       iex> Validex.Validations.list(%{})
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: %{}, message: :not_a_list, label: Validex.Validations}
+          %Validex.Error{candidate: %{}, message: :not_a_list, context: Validex.Validations}
       ]}
   """
   @spec list(any()) :: Core.validation_result_t()
@@ -246,12 +246,12 @@ defmodule Validex.Validations do
 
       iex> Validex.Validations.empty_list([1,2,3])
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: [1,2,3], message: :not_an_empty_list, label: Validex.Validations}
+          %Validex.Error{candidate: [1,2,3], message: :not_an_empty_list, context: Validex.Validations}
       ]}
 
       iex> Validex.Validations.empty_list(%{})
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: %{}, message: :not_an_empty_list, label: Validex.Validations}
+          %Validex.Error{candidate: %{}, message: :not_an_empty_list, context: Validex.Validations}
       ]}
   """
   @spec empty_list(any()) :: Core.validation_result_t()
@@ -268,12 +268,12 @@ defmodule Validex.Validations do
 
       iex> Validex.Validations.non_empty_list([])
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: [], message: :not_a_non_empty_list, label: Validex.Validations}
+          %Validex.Error{candidate: [], message: :not_a_non_empty_list, context: Validex.Validations}
       ]}
 
       iex> Validex.Validations.non_empty_list(%{})
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: %{}, message: :not_a_non_empty_list, label: Validex.Validations}
+          %Validex.Error{candidate: %{}, message: :not_a_non_empty_list, context: Validex.Validations}
       ]}
   """
   @spec non_empty_list(any()) :: Core.validation_result_t()
@@ -293,7 +293,7 @@ defmodule Validex.Validations do
 
       iex> Validex.Validations.map([])
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: [], message: :not_a_map, label: Validex.Validations}
+          %Validex.Error{candidate: [], message: :not_a_map, context: Validex.Validations}
       ]}
   """
   @spec map(any()) :: Core.validation_result_t()
@@ -310,7 +310,7 @@ defmodule Validex.Validations do
 
       iex> Validex.Validations.map_key(%{}, :hello)
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: {%{}, :hello}, message: :not_a_key_of_map, label: Validex.Validations}
+          %Validex.Error{candidate: {%{}, :hello}, message: :not_a_key_of_map, context: Validex.Validations}
       ]}
   """
   @spec map_key(map(), any()) :: Core.validation_result_t()
@@ -328,7 +328,7 @@ defmodule Validex.Validations do
 
       iex> Validex.Validations.nil?(12)
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: 12, message: :not_nil, label: Validex.Validations}
+          %Validex.Error{candidate: 12, message: :not_nil, context: Validex.Validations}
       ]}
   """
   @spec nil?(any()) :: Core.validation_result_t()
@@ -345,7 +345,7 @@ defmodule Validex.Validations do
 
       iex> Validex.Validations.not_nil(nil)
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: nil, message: :is_nil, label: Validex.Validations}
+          %Validex.Error{candidate: nil, message: :is_nil, context: Validex.Validations}
       ]}
   """
   @spec not_nil(any()) :: Core.validation_result_t()
@@ -365,7 +365,7 @@ defmodule Validex.Validations do
 
       iex> Validex.Validations.number(nil)
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: nil, message: :not_a_number, label: Validex.Validations}
+          %Validex.Error{candidate: nil, message: :not_a_number, context: Validex.Validations}
       ]}
   """
   @spec number(any()) :: Core.validation_result_t()
@@ -382,7 +382,7 @@ defmodule Validex.Validations do
 
       iex> Validex.Validations.pid(12)
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: 12, message: :not_a_pid, label: Validex.Validations}
+          %Validex.Error{candidate: 12, message: :not_a_pid, context: Validex.Validations}
       ]}
   """
   @spec pid(any()) :: Core.validation_result_t()
@@ -406,7 +406,7 @@ defmodule Validex.Validations do
 
       iex> Validex.Validations.struct(%{})
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: %{}, message: :not_a_struct, label: Validex.Validations}
+          %Validex.Error{candidate: %{}, message: :not_a_struct, context: Validex.Validations}
       ]}
   """
   @spec struct(any()) :: Core.validation_result_t()
@@ -424,7 +424,7 @@ defmodule Validex.Validations do
 
       iex> Validex.Validations.reference(12)
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: 12, message: :not_a_reference, label: Validex.Validations}
+          %Validex.Error{candidate: 12, message: :not_a_reference, context: Validex.Validations}
       ]}
   """
   @spec reference(any()) :: Core.validation_result_t()
@@ -441,7 +441,7 @@ defmodule Validex.Validations do
 
       iex> Validex.Validations.tuple([1,2,3])
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: [1,2,3], message: :not_a_tuple, label: Validex.Validations}
+          %Validex.Error{candidate: [1,2,3], message: :not_a_tuple, context: Validex.Validations}
       ]}
   """
   @spec tuple(any()) :: Core.validation_result_t()
@@ -458,12 +458,12 @@ defmodule Validex.Validations do
 
       iex> Validex.Validations.member([], 1)
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: {[], 1}, message: :not_a_member, label: Validex.Validations}
+          %Validex.Error{candidate: {[], 1}, message: :not_a_member, context: Validex.Validations}
       ]}
 
       iex> Validex.Validations.member([1,2,3], 12)
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: {[1,2,3], 12}, message: :not_a_member, label: Validex.Validations}
+          %Validex.Error{candidate: {[1,2,3], 12}, message: :not_a_member, context: Validex.Validations}
       ]}
   """
   @spec member(Enum.t(), any()) :: Core.validation_result_t()
@@ -488,7 +488,7 @@ defmodule Validex.Validations do
 
       iex> Validex.Validations.not_a_member([1,2,3], 1)
       %Validex.Failure{errors: [
-          %Validex.Error{candidate: {[1,2,3], 1}, message: :is_a_member, label: Validex.Validations}
+          %Validex.Error{candidate: {[1,2,3], 1}, message: :is_a_member, context: Validex.Validations}
       ]}
   """
   @spec not_a_member(Enum.t(), any()) :: Core.validation_result_t()
