@@ -3,6 +3,12 @@ defmodule Validex.Core do
   Documentation for `Validex`.
   """
 
+  # TODO: Module doc
+  # TODO: Tests showing the whole thing
+  # TODO: README
+  # TODO: Test in github
+  # TODO: Deploy in hex
+
   alias Validex.Error, as: Error
   alias Validex.Failure, as: Failure
   alias Validex.Success, as: Success
@@ -101,6 +107,100 @@ defmodule Validex.Core do
   """
   @spec pure(any()) :: Success.t()
   def pure(value), do: Success.make(value)
+
+  @doc ~S"""
+  Augments a failure's contexts if a failure is passed, else returns the success.
+
+  ## Examples
+
+      iex> Validex.Core.pure(12) |> Validex.Core.augment_contexts(Hello)
+      %Validex.Success{candidate: 12}
+
+      iex> error_1 = Validex.Error.make(1, :message, Context)
+      iex> error_2 = Validex.Error.make(2, :message, AnotherContext)
+      iex> failure = Validex.Failure.make([error_1, error_2])
+      iex> Validex.Core.augment_contexts(failure, AdditionalContext)
+      %Validex.Failure{
+          errors: [
+              %Validex.Error{candidate: 1, message: :message, context: {AdditionalContext, Context}},
+              %Validex.Error{candidate: 2, message: :message, context: {AdditionalContext, AnotherContext}},
+          ]
+      }
+  """
+  @spec augment_contexts(validation_result_t(), any()) :: validation_result_t()
+  def augment_contexts(s = %Success{}, _), do: s
+  def augment_contexts(f = %Failure{}, additional_context),
+    do: map_failure(f, fn error -> Error.augment_context(error, additional_context) end)
+
+  @doc ~S"""
+  Augments a failure's messages if a failure is passed, else returns the success.
+
+  ## Examples
+
+      iex> Validex.Core.pure(12) |> Validex.Core.augment_messages(Hello)
+      %Validex.Success{candidate: 12}
+
+      iex> error_1 = Validex.Error.make(1, :message, Context)
+      iex> error_2 = Validex.Error.make(2, :another_message, Context)
+      iex> failure = Validex.Failure.make([error_1, error_2])
+      iex> Validex.Core.augment_messages(failure, :additional_message)
+      %Validex.Failure{
+          errors: [
+              %Validex.Error{candidate: 1, message: {:additional_message, :message}, context: Context},
+              %Validex.Error{candidate: 2, message: {:additional_message, :another_message}, context: Context}
+          ]
+      }
+  """
+  @spec augment_messages(validation_result_t(), any()) :: validation_result_t()
+  def augment_messages(s = %Success{}, _), do: s
+  def augment_messages(f = %Failure{}, additional_message),
+    do: map_failure(f, fn error -> Error.augment_message(error, additional_message) end)
+
+  @doc ~S"""
+  Overrides a failure's messages if a failure is passed, else returns the success.
+
+  ## Examples
+
+      iex> Validex.Core.pure(12) |> Validex.Core.override_messages(Hello)
+      %Validex.Success{candidate: 12}
+
+      iex> error_1 = Validex.Error.make(1, :message, Context)
+      iex> error_2 = Validex.Error.make(2, :another_message, Context)
+      iex> failure = Validex.Failure.make([error_1, error_2])
+      iex> Validex.Core.override_messages(failure, :additional_message)
+      %Validex.Failure{
+          errors: [
+              %Validex.Error{candidate: 1, message: :additional_message, context: Context},
+              %Validex.Error{candidate: 2, message: :additional_message, context: Context}
+          ]
+      }
+  """
+  @spec override_messages(validation_result_t(), any()) :: validation_result_t()
+  def override_messages(s = %Success{}, _), do: s
+  def override_messages(f = %Failure{}, message), do: Failure.override_error_messages(f, message)
+
+  @doc ~S"""
+  Overrides a failure's contexts if a failure is passed, else returns the success.
+
+  ## Examples
+
+      iex> Validex.Core.pure(12) |> Validex.Core.override_contexts(Hello)
+      %Validex.Success{candidate: 12}
+
+      iex> error_1 = Validex.Error.make(1, :message, Context)
+      iex> error_2 = Validex.Error.make(2, :another_message, Context)
+      iex> failure = Validex.Failure.make([error_1, error_2])
+      iex> Validex.Core.override_contexts(failure, NewContext)
+      %Validex.Failure{
+          errors: [
+          %Validex.Error{candidate: 1, message: :message, context: NewContext},
+          %Validex.Error{candidate: 2, message: :another_message, context: NewContext}
+          ]
+      }
+  """
+  @spec override_contexts(validation_result_t(), any()) :: validation_result_t()
+  def override_contexts(s = %Success{}, _), do: s
+  def override_contexts(f = %Failure{}, context), do: Failure.override_error_contexts(f, context)
 
   @doc ~S"""
   This function applies a function wrapped in a validation success to the
@@ -210,7 +310,7 @@ defmodule Validex.Core do
   @doc ~S"""
   Does the same as `Validex.Core.sequence/1` but applies a validation function
   to all candidates first.
-  Takes an optional label to augment the results, including the index. Uses :seq if
+  Takes an optional context to augment the results, including the index. Uses :seq if
   none is given.
 
   ## Examples
@@ -222,26 +322,15 @@ defmodule Validex.Core do
       iex> failure_fn = fn c -> [Validex.Error.make(c, "not allowed", nil)] |> Validex.Failure.make() end
       iex> Validex.Core.sequence_of([:hello, :world], failure_fn)
       %Validex.Failure{
-          errors: [Validex.Error.make(:hello, "not allowed", {{:seq, 0}, nil}),
-                   Validex.Error.make(:world, "not allowed", {{:seq, 1}, nil})]}
-
-      iex> failure_fn = fn c -> [Validex.Error.make(c, "not allowed", nil)] |> Validex.Failure.make() end
-      iex> Validex.Core.sequence_of([:hello, :world], failure_fn, label: :test)
-      %Validex.Failure{
-          errors: [Validex.Error.make(:hello, "not allowed", {{:test, 0}, nil}),
-                   Validex.Error.make(:world, "not allowed", {{:test, 1}, nil})]}
+          errors: [Validex.Error.make(:hello, {{:index, 0}, "not allowed"}, nil),
+                   Validex.Error.make(:world, {{:index, 1}, "not allowed"}, nil)]}
   """
-  @spec sequence_of([any()], validation_fun_t, [{:label, any()}]) ::
-          validation_result_t
-  def sequence_of(candidates, validation_f, opts \\ []) do
+  @spec sequence_of([any()], validation_fun_t) :: validation_result_t
+  def sequence_of(candidates, validation_f) do
     candidates
     |> Enum.with_index()
     |> Enum.map(fn {candidate, idx} ->
-      validation_f.(candidate)
-      |> map_failure(fn error ->
-        additional_label = {opts[:label] || :seq, idx}
-        Error.augment_label(error, additional_label)
-      end)
+      validation_f.(candidate) |> augment_messages({:index, idx})
     end)
     |> sequence()
   end
@@ -256,7 +345,7 @@ defmodule Validex.Core do
   Returns a success containing the candidate if each validation function returns a success.
   Else returns a validation failure containing errors of each failed validation.
 
-  Takes an optional label as in `Validex.Core.sequence_of/3`.
+  Takes an optional context as in `Validex.Core.sequence_of/3`.
 
   ## Examples
 
@@ -268,23 +357,17 @@ defmodule Validex.Core do
       iex> failure_fn = fn c -> [Validex.Error.make(c, "not allowed", nil)] |> Validex.Failure.make() end
       iex> success_fn = fn _ -> Validex.Success.make(12) end
       iex> Validex.Core.validate_all([failure_fn, success_fn], :hello)
-      %Validex.Failure{errors: [Validex.Error.make(:hello, "not allowed", {{:seq, 0}, nil})]}
+      %Validex.Failure{errors: [Validex.Error.make(:hello, {{:index, 0}, "not allowed"}, nil)]}
   """
   @type validate_all_return_t :: {:ok, validation_result_t} | {:error, :no_validators}
-  @spec validate_all([validation_fun_t], any(), [{:label, any()}]) :: validate_all_return_t
-  def validate_all(validation_fs, candidate, opts \\ [])
-  def validate_all([], _, _), do: {:error, :no_validators}
-
-  def validate_all(validation_fs, candidate, opts) do
+  @spec validate_all([validation_fun_t], any()) :: validate_all_return_t
+  def validate_all([], _), do: {:error, :no_validators}
+  def validate_all(validation_fs, candidate) do
     validated =
       validation_fs
       |> Enum.with_index()
       |> Enum.map(fn {validation_f, idx} ->
-        validation_f.(candidate)
-        |> map_failure(fn error ->
-          additional_label = {opts[:label] || :seq, idx}
-          Error.augment_label(error, additional_label)
-        end)
+        validation_f.(candidate) |> augment_messages({:index, idx})
       end)
       |> sequence
 
