@@ -1,13 +1,32 @@
-name: Test
+name: Elixir CI
 
 on:
-  push: {branches: main}
-  pull_request: {branches: main}
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  run_tests:
+  test:
+    name: Build and test
     runs-on: ubuntu-latest
+
     steps:
     - uses: actions/checkout@v2
-    - name: "run tests"
-      uses: Adzz/elixir_run_tests_action@v2.0.0
+    - name: Set up Elixir
+      uses: erlef/setup-elixir@885971a72ed1f9240973bd92ab57af8c1aa68f24
+      with:
+        elixir-version: '1.13.0'
+        otp-version: '24'
+    - name: Restore dependencies cache
+      uses: actions/cache@v2
+      with:
+        path: deps
+        key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+        restore-keys: ${{ runner.os }}-mix-
+    - name: Install dependencies
+      run: mix deps.get
+    - name: Run tests
+      run: mix test
+    - name: Check Formatting
+      run: mix format --check-formatted
