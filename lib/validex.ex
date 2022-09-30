@@ -14,7 +14,7 @@ defmodule Validex do
 
   use Currying
 
-  @type validation_result_t :: Failure.t() | Success.t()
+  @type validation_result_t(inner_t) :: Failure.t() | Success.t(inner_t)
 
   @doc ~S"""
   Returns `true` if a value is either a [[Validex.Success]] or a [[Validex.Failure]],
@@ -54,7 +54,10 @@ defmodule Validex do
       iex> Validex.map_success(failure, fn a -> a + 1 end)
       %Validex.Failure{errors: []}
   """
-  @spec map_success(validation_result_t, (any() -> any())) :: validation_result_t
+  @spec map_success(
+          validation_result_t(Success.some_inner_t()),
+          (Success.some_inner_t() -> any())
+        ) :: validation_result_t(any())
   def map_success(success = %Success{}, f), do: Success.map(success, f)
   def map_success(failure = %Failure{}, _), do: failure
 
@@ -72,7 +75,8 @@ defmodule Validex do
       iex> Validex.map_failure(failure, fn err -> %Validex.Error{ err | candidate: 2} end)
       %Validex.Failure{errors: [Validex.Error.make(2, :hello, :hello)]}
   """
-  @spec map_failure(validation_result_t, (Error.t() -> Error.t())) :: validation_result_t
+  @spec map_failure(validation_result_t(Success.some_inner_t()), (Error.t() -> Error.t())) ::
+          validation_result_t(Success.some_inner_t())
   def map_failure(failure = %Failure{}, f), do: Failure.map(failure, f)
   def map_failure(success = %Success{}, _), do: success
 
@@ -90,8 +94,12 @@ defmodule Validex do
       iex> Validex.map(failure, fn _ -> :does_nothing end, fn err -> %Validex.Error{ err | candidate: 2} end)
       %Validex.Failure{errors: [Validex.Error.make(2, :hello, :hello)]}
   """
-  @spec map(validation_result_t, (any() -> any()), (Error.t() -> Error.t())) ::
-          validation_result_t
+  @spec map(
+          validation_result_t(Success.some_inner_t()),
+          (Success.some_inner_t() -> any()),
+          (Error.t() -> Error.t())
+        ) ::
+          validation_result_t(any())
   def map(f = %Failure{}, _, f_failure), do: map_failure(f, f_failure)
   def map(s = %Success{}, f_success, _), do: map_success(s, f_success)
 
@@ -104,7 +112,7 @@ defmodule Validex do
       iex> Validex.pure(12)
       %Validex.Success{candidate: 12}
   """
-  @spec pure(any()) :: Success.t()
+  @spec pure(Success.some_inner_t()) :: Success.t(Success.some_inner_t())
   def pure(value), do: Success.make(value)
 
   @doc ~S"""
@@ -126,7 +134,8 @@ defmodule Validex do
           ]
       }
   """
-  @spec augment_contexts(validation_result_t(), any()) :: validation_result_t()
+  @spec augment_contexts(validation_result_t(Success.some_inner_t()), any()) ::
+          validation_result_t(Success.some_inner_t())
   def augment_contexts(s = %Success{}, _), do: s
 
   def augment_contexts(f = %Failure{}, additional_context),
@@ -151,7 +160,8 @@ defmodule Validex do
           ]
       }
   """
-  @spec augment_messages(validation_result_t(), any()) :: validation_result_t()
+  @spec augment_messages(validation_result_t(Success.some_inner_t()), any()) ::
+          validation_result_t(Success.some_inner_t())
   def augment_messages(s = %Success{}, _), do: s
 
   def augment_messages(f = %Failure{}, additional_message),
@@ -176,7 +186,8 @@ defmodule Validex do
           ]
       }
   """
-  @spec override_messages(validation_result_t(), any()) :: validation_result_t()
+  @spec override_messages(validation_result_t(Success.some_inner_t()), any()) ::
+          validation_result_t(Success.some_inner_t())
   def override_messages(s = %Success{}, _), do: s
   def override_messages(f = %Failure{}, message), do: Failure.override_error_messages(f, message)
 
@@ -199,7 +210,8 @@ defmodule Validex do
           ]
       }
   """
-  @spec override_contexts(validation_result_t(), any()) :: validation_result_t()
+  @spec override_contexts(validation_result_t(Success.some_inner_t()), any()) ::
+          validation_result_t(Success.some_inner_t())
   def override_contexts(s = %Success{}, _), do: s
   def override_contexts(f = %Failure{}, context), do: Failure.override_error_contexts(f, context)
 
@@ -231,7 +243,10 @@ defmodule Validex do
       iex> Validex.seq(failure1, failure2)
       %Validex.Failure{errors: [error1, error2]}
   """
-  @spec seq(validation_result_t, validation_result_t) :: validation_result_t
+  @spec seq(
+          validation_result_t((Success.some_inner_t() -> any())),
+          validation_result_t(Success.some_inner_t())
+        ) :: validation_result_t(any())
   def seq(f1 = %Failure{}, f2 = %Failure{}), do: Failure.combine(f1, f2)
   def seq(f1 = %Failure{}, _), do: f1
   def seq(%Success{candidate: f}, validation_result), do: map_success(validation_result, f)
@@ -239,7 +254,10 @@ defmodule Validex do
   @doc !"""
        Essentially a monadic bind.
        """
-  @spec bind(validation_result_t, (any() -> any())) :: validation_result_t
+  @spec bind(
+          validation_result_t(Success.some_inner_t()),
+          (Success.some_inner_t() -> validation_result_t(any()))
+        ) :: validation_result_t(any())
   defp bind(failure = %Failure{}, _), do: failure
   defp bind(%Success{candidate: candidate}, f), do: f.(candidate)
 
@@ -256,7 +274,10 @@ defmodule Validex do
       iex> Validex.Failure.make([]) |> Validex.and_then(fn x -> x + 1 end)
       %Validex.Failure{errors: []}
   """
-  @spec and_then(validation_result_t, (any() -> validation_result_t)) :: validation_result_t
+  @spec and_then(
+          validation_result_t(Success.some_inner_t()),
+          (Success.some_inner_t() -> validation_result_t(any()))
+        ) :: validation_result_t(any())
   def and_then(validation_result, f), do: bind(validation_result, f)
 
   @doc ~S"""
@@ -277,7 +298,7 @@ defmodule Validex do
       iex> Validex.validate(fn a, b -> {a, b} end, [failure1, failure2])
       %Validex.Failure{errors: [error1, error2]}
   """
-  @spec validate(function(), [validation_result_t]) :: validation_result_t
+  @spec validate(function(), [validation_result_t(any())]) :: validation_result_t(any())
   def validate(result_f, validations) do
     pure_curried = curry(result_f) |> pure()
     Enum.reduce(validations, pure_curried, fn a, b -> seq(b, a) end)
@@ -300,14 +321,15 @@ defmodule Validex do
       iex> Validex.sequence([failure1, failure2])
       %Validex.Failure{errors: [error1, error2]}
   """
-  @spec sequence([validation_result_t]) :: validation_result_t
+  @spec sequence([validation_result_t(Success.some_inner_t())]) ::
+          validation_result_t([Success.some_inner_t()])
   def sequence([]), do: pure([])
   def sequence([result]), do: result |> map_success(fn x -> [x] end)
 
   def sequence([x | xs]),
     do: validate(fn a, b -> [a | b] end, [x, sequence(xs)])
 
-  @type validation_fun_t :: (any() -> validation_result_t)
+  @type validation_fun_t(result_t) :: (any() -> validation_result_t(result_t))
 
   @doc ~S"""
   Does the same as `Validex.sequence/1` but applies a validation function
@@ -327,7 +349,8 @@ defmodule Validex do
           errors: [Validex.Error.make(:hello, {{:index, 0}, "not allowed"}, nil),
                    Validex.Error.make(:world, {{:index, 1}, "not allowed"}, nil)]}
   """
-  @spec sequence_of([any()], validation_fun_t) :: validation_result_t
+  @spec sequence_of([any()], validation_fun_t(Success.some_inner_t())) ::
+          validation_result_t(Success.some_inner_t())
   def sequence_of(candidates, validation_f) do
     candidates
     |> Enum.with_index()
@@ -336,11 +359,6 @@ defmodule Validex do
     end)
     |> sequence()
   end
-
-  @type validate_choice_return_t ::
-          {:error, :no_validators}
-          | {:error, :more_than_one_success}
-          | {:ok, [validation_result_t]}
 
   @doc ~S"""
   Applies a list of validation functions to a candidate.
@@ -361,8 +379,10 @@ defmodule Validex do
       iex> Validex.validate_all([failure_fn, success_fn], :hello)
       %Validex.Failure{errors: [Validex.Error.make(:hello, {{:index, 0}, "not allowed"}, nil)]}
   """
-  @type validate_all_return_t :: {:ok, validation_result_t} | {:error, :no_validators}
-  @spec validate_all([validation_fun_t], any()) :: validate_all_return_t
+  @type validate_all_return_t(inner_t) ::
+          {:ok, validation_result_t(inner_t)} | {:error, :no_validators}
+  @spec validate_all([validation_fun_t(Success.some_inner_t())], any()) ::
+          validate_all_return_t(Success.some_inner_t())
   def validate_all([], _), do: {:error, :no_validators}
 
   def validate_all(validation_fs, candidate) do
@@ -379,5 +399,4 @@ defmodule Validex do
       %Validex.Failure{} -> validated
     end
   end
-
 end

@@ -22,7 +22,7 @@ defmodule Validex.Validations do
       %Validex.Success{candidate: 12}
 
   """
-  @spec succeed(any()) :: Success.t()
+  @spec succeed(Success.some_inner_t()) :: Success.t(Success.some_inner_t())
   def succeed(candidate), do: Core.pure(candidate)
 
   @doc ~S"""
@@ -39,7 +39,7 @@ defmodule Validex.Validations do
       ]}
 
   """
-  @spec atom(any()) :: Core.validation_result_t()
+  @spec atom(any()) :: Core.validation_result_t(any())
   def atom(val) when is_atom(val), do: Core.pure(val)
   def atom(val), do: failure_from_error(val, :not_an_atom)
 
@@ -60,7 +60,7 @@ defmodule Validex.Validations do
       ]}
 
   """
-  @spec bitstring(any()) :: Core.validation_result_t()
+  @spec bitstring(any()) :: Core.validation_result_t(any())
   def bitstring(val) when is_bitstring(val), do: Core.pure(val)
   def bitstring(val), do: failure_from_error(val, :not_a_bitstring)
 
@@ -78,7 +78,7 @@ defmodule Validex.Validations do
       ]}
 
   """
-  @spec binary(any()) :: Core.validation_result_t()
+  @spec binary(any()) :: Core.validation_result_t(any())
   def binary(val) when is_binary(val), do: Core.pure(val)
   def binary(val), do: failure_from_error(val, :not_a_binary)
 
@@ -96,7 +96,7 @@ defmodule Validex.Validations do
       ]}
 
   """
-  @spec boolean(any()) :: Core.validation_result_t()
+  @spec boolean(any()) :: Core.validation_result_t(any())
   def boolean(val) when is_boolean(val), do: Core.pure(val)
   def boolean(val), do: failure_from_error(val, :not_a_boolean)
 
@@ -114,7 +114,7 @@ defmodule Validex.Validations do
       ]}
 
   """
-  @spec exception(any()) :: Core.validation_result_t()
+  @spec exception(any()) :: Core.validation_result_t(any())
   def exception(val) when is_exception(val), do: Core.pure(val)
   def exception(val), do: failure_from_error(val, :not_an_exception)
 
@@ -132,7 +132,7 @@ defmodule Validex.Validations do
       ]}
 
   """
-  @spec float(any()) :: Core.validation_result_t()
+  @spec float(any()) :: Core.validation_result_t(any())
   def float(val) when is_float(val), do: Core.pure(val)
   def float(val), do: failure_from_error(val, :not_a_float)
 
@@ -150,7 +150,7 @@ defmodule Validex.Validations do
       ]}
 
   """
-  @spec function(any()) :: Core.validation_result_t()
+  @spec function(any()) :: Core.validation_result_t(any())
   def function(val) when is_function(val), do: Core.pure(val)
   def function(val), do: failure_from_error(val, :not_a_function)
 
@@ -168,7 +168,7 @@ defmodule Validex.Validations do
       ]}
 
   """
-  @spec integer(any()) :: Core.validation_result_t()
+  @spec integer(any()) :: Core.validation_result_t(any())
   def integer(val) when is_integer(val), do: Core.pure(val)
   def integer(val), do: failure_from_error(val, :not_an_integer)
 
@@ -190,7 +190,7 @@ defmodule Validex.Validations do
           %Validex.Error{candidate: -2, message: :not_a_positive_integer, context: Validex.Validations}
       ]}
   """
-  @spec pos_integer(any()) :: Core.validation_result_t()
+  @spec pos_integer(any()) :: Core.validation_result_t(any())
   def pos_integer(val) when is_integer(val) and val > 0, do: Core.pure(val)
   def pos_integer(val), do: failure_from_error(val, :not_a_positive_integer)
 
@@ -212,7 +212,7 @@ defmodule Validex.Validations do
           %Validex.Error{candidate: 2, message: :not_a_negative_integer, context: Validex.Validations}
       ]}
   """
-  @spec neg_integer(any()) :: Core.validation_result_t()
+  @spec neg_integer(any()) :: Core.validation_result_t(any())
   def neg_integer(val) when is_integer(val) and val < 0, do: Core.pure(val)
   def neg_integer(val), do: failure_from_error(val, :not_a_negative_integer)
 
@@ -232,7 +232,7 @@ defmodule Validex.Validations do
           %Validex.Error{candidate: %{}, message: :not_a_list, context: Validex.Validations}
       ]}
   """
-  @spec list(any()) :: Core.validation_result_t()
+  @spec list(any()) :: Core.validation_result_t(any())
   def list(val) when is_list(val), do: Core.pure(val)
   def list(val), do: failure_from_error(val, :not_a_list)
 
@@ -254,7 +254,7 @@ defmodule Validex.Validations do
           %Validex.Error{candidate: %{}, message: :not_an_empty_list, context: Validex.Validations}
       ]}
   """
-  @spec empty_list(any()) :: Core.validation_result_t()
+  @spec empty_list(any()) :: Core.validation_result_t(any())
   def empty_list(val) when is_list(val) and length(val) == 0, do: Core.pure(val)
   def empty_list(val), do: failure_from_error(val, :not_an_empty_list)
 
@@ -276,7 +276,7 @@ defmodule Validex.Validations do
           %Validex.Error{candidate: %{}, message: :not_a_non_empty_list, context: Validex.Validations}
       ]}
   """
-  @spec non_empty_list(any()) :: Core.validation_result_t()
+  @spec non_empty_list(any()) :: Core.validation_result_t(any())
   def non_empty_list(val) when is_list(val) and length(val) > 0, do: Core.pure(val)
   def non_empty_list(val), do: failure_from_error(val, :not_a_non_empty_list)
 
@@ -296,7 +296,7 @@ defmodule Validex.Validations do
           %Validex.Error{candidate: [], message: :not_a_map, context: Validex.Validations}
       ]}
   """
-  @spec map(any()) :: Core.validation_result_t()
+  @spec map(any()) :: Core.validation_result_t(any())
   def map(val) when is_map(val), do: Core.pure(val)
   def map(val), do: failure_from_error(val, :not_a_map)
 
@@ -313,7 +313,7 @@ defmodule Validex.Validations do
           %Validex.Error{candidate: {%{}, :hello}, message: :not_a_key_of_map, context: Validex.Validations}
       ]}
   """
-  @spec map_key(map(), any()) :: Core.validation_result_t()
+  @spec map_key(map(), any()) :: Core.validation_result_t(any())
   def map_key(m, k) when is_map_key(m, k), do: Core.pure({m, k})
   def map_key(m, k), do: failure_from_error({m, k}, :not_a_key_of_map)
 
@@ -331,7 +331,7 @@ defmodule Validex.Validations do
           %Validex.Error{candidate: 12, message: :not_nil, context: Validex.Validations}
       ]}
   """
-  @spec nil?(any()) :: Core.validation_result_t()
+  @spec nil?(any()) :: Core.validation_result_t(any())
   def nil?(val) when is_nil(val), do: Core.pure(val)
   def nil?(val), do: failure_from_error(val, :not_nil)
 
@@ -348,7 +348,7 @@ defmodule Validex.Validations do
           %Validex.Error{candidate: nil, message: :is_nil, context: Validex.Validations}
       ]}
   """
-  @spec not_nil(any()) :: Core.validation_result_t()
+  @spec not_nil(any()) :: Core.validation_result_t(any())
   def not_nil(val) when is_nil(val), do: failure_from_error(val, :is_nil)
   def not_nil(val), do: Core.pure(val)
 
@@ -368,7 +368,7 @@ defmodule Validex.Validations do
           %Validex.Error{candidate: nil, message: :not_a_number, context: Validex.Validations}
       ]}
   """
-  @spec number(any()) :: Core.validation_result_t()
+  @spec number(any()) :: Core.validation_result_t(any())
   def number(val) when is_number(val), do: Core.pure(val)
   def number(val), do: failure_from_error(val, :not_a_number)
 
@@ -385,14 +385,14 @@ defmodule Validex.Validations do
           %Validex.Error{candidate: 12, message: :not_a_pid, context: Validex.Validations}
       ]}
   """
-  @spec pid(any()) :: Core.validation_result_t()
+  @spec pid(any()) :: Core.validation_result_t(any())
   def pid(val) when is_pid(val), do: Core.pure(val)
   def pid(val), do: failure_from_error(val, :not_a_pid)
 
   @doc ~S"""
   Returns a validation success if the candidate is a port, returns a failure else.
   """
-  @spec port(any()) :: Core.validation_result_t()
+  @spec port(any()) :: Core.validation_result_t(any())
   def port(val) when is_port(val), do: Core.pure(val)
   def port(val), do: failure_from_error(val, :not_a_port)
 
@@ -409,7 +409,7 @@ defmodule Validex.Validations do
           %Validex.Error{candidate: %{}, message: :not_a_struct, context: Validex.Validations}
       ]}
   """
-  @spec struct(any()) :: Core.validation_result_t()
+  @spec struct(any()) :: Core.validation_result_t(any())
   def struct(val) when is_struct(val), do: Core.pure(val)
   def struct(val), do: failure_from_error(val, :not_a_struct)
 
@@ -427,7 +427,7 @@ defmodule Validex.Validations do
           %Validex.Error{candidate: 12, message: :not_a_reference, context: Validex.Validations}
       ]}
   """
-  @spec reference(any()) :: Core.validation_result_t()
+  @spec reference(any()) :: Core.validation_result_t(any())
   def reference(val) when is_reference(val), do: Core.pure(val)
   def reference(val), do: failure_from_error(val, :not_a_reference)
 
@@ -444,7 +444,7 @@ defmodule Validex.Validations do
           %Validex.Error{candidate: [1,2,3], message: :not_a_tuple, context: Validex.Validations}
       ]}
   """
-  @spec tuple(any()) :: Core.validation_result_t()
+  @spec tuple(any()) :: Core.validation_result_t(any())
   def tuple(val) when is_tuple(val), do: Core.pure(val)
   def tuple(val), do: failure_from_error(val, :not_a_tuple)
 
@@ -466,7 +466,7 @@ defmodule Validex.Validations do
           %Validex.Error{candidate: {[1,2,3], 12}, message: :not_a_member, context: Validex.Validations}
       ]}
   """
-  @spec member(Enum.t(), any()) :: Core.validation_result_t()
+  @spec member(Enum.t(), any()) :: Core.validation_result_t(any())
   def member(enum, elem) do
     if Enum.member?(enum, elem) do
       Core.pure({enum, elem})
@@ -491,7 +491,7 @@ defmodule Validex.Validations do
           %Validex.Error{candidate: {[1,2,3], 1}, message: :is_a_member, context: Validex.Validations}
       ]}
   """
-  @spec not_a_member(Enum.t(), any()) :: Core.validation_result_t()
+  @spec not_a_member(Enum.t(), any()) :: Core.validation_result_t(any())
   def not_a_member(enum, elem) do
     if Enum.member?(enum, elem) do
       failure_from_error({enum, elem}, :is_a_member)

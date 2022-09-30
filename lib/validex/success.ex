@@ -10,14 +10,15 @@ defmodule Validex.Success do
 
   alias __MODULE__
 
-  @type t() :: %Success{}
+  @type some_inner_t :: any()
+  @type t(inner_t) :: %Success{candidate: inner_t}
   @enforce_keys [:candidate]
   defstruct [:candidate]
 
   @doc ~S"""
   Smart constructor of a success.
   """
-  @spec make(any()) :: t()
+  @spec make(some_inner_t()) :: t(some_inner_t())
   def make(candidate), do: %Success{candidate: candidate}
 
   @doc ~S"""
@@ -28,7 +29,7 @@ defmodule Validex.Success do
       iex> Validex.Success.map(Validex.Success.make(0), fn a -> a + 1 end)
       %Validex.Success{candidate: 1}
   """
-  @spec map(t(), (any() -> any())) :: t()
+  @spec map(t(some_inner_t()), (some_inner_t() -> any())) :: t(any())
   def map(%Success{candidate: candidate}, f), do: f.(candidate) |> make()
 
   @doc ~S"""
