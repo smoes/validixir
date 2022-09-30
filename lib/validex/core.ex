@@ -43,11 +43,11 @@ defmodule Validex.Core do
 
       iex> success = Validex.Success.make(0)
       iex> Validex.Core.map_success(success, fn a -> a + 1 end)
-      Validex.Success.make(1)
+      %Validex.Success{candidate: 1}
 
       iex> failure = Validex.Failure.make([])
       iex> Validex.Core.map_success(failure, fn a -> a + 1 end)
-      Validex.Failure.make([])
+      %Validex.Failure{errors: []}
   """
   @spec map_success(validation_result_t, (any() -> any())) :: validation_result_t
   def map_success(success = %Success{}, f), do: Success.map(success, f)
@@ -61,11 +61,11 @@ defmodule Validex.Core do
 
       iex> success = Validex.Success.make(0)
       iex> Validex.Core.map_failure(success, fn a -> a + 1 end)
-      Validex.Success.make(0)
+      %Validex.Success{candidate: 0}
 
       iex> failure = Validex.Failure.make([Validex.Error.make(1, :hello, :hello)])
       iex> Validex.Core.map_failure(failure, fn err -> %Validex.Error{ err | candidate: 2} end)
-      Validex.Failure.make([Validex.Error.make(2, :hello, :hello)])
+      %Validex.Failure{errors: [Validex.Error.make(2, :hello, :hello)]}
   """
   @spec map_failure(validation_result_t, (Error.t() -> Error.t())) :: validation_result_t
   def map_failure(failure = %Failure{}, f), do: Failure.map(failure, f)
@@ -79,11 +79,11 @@ defmodule Validex.Core do
 
       iex> success = Validex.Success.make(0)
       iex> Validex.Core.map(success, fn a -> a + 1 end, fn _ -> :does_nothing end)
-      Validex.Success.make(1)
+      %Validex.Success{candidate: 1}
 
       iex> failure = Validex.Failure.make([Validex.Error.make(1, :hello, :hello)])
       iex> Validex.Core.map(failure, fn _ -> :does_nothing end, fn err -> %Validex.Error{ err | candidate: 2} end)
-      Validex.Failure.make([Validex.Error.make(2, :hello, :hello)])
+      %Validex.Failure{errors: [Validex.Error.make(2, :hello, :hello)]}
   """
   @spec map(validation_result_t, (any() -> any()), (Error.t() -> Error.t())) ::
           validation_result_t
@@ -120,15 +120,15 @@ defmodule Validex.Core do
       iex> error = Validex.Error.make(:hello, "not allowed", nil)
       iex> failure = Validex.Failure.make([error])
       iex> success = Validex.Success.make(1)
-      iex> Validex.Core.seq(failure, success) === failure
-      true
+      iex> Validex.Core.seq(failure, success)
+      %Validex.Failure{errors: [error]}
 
       iex> error1 = Validex.Error.make(:hello, "not allowed", nil)
       iex> error2 = Validex.Error.make(:world, "not allowed", nil)
       iex> failure1 = Validex.Failure.make([error1])
       iex> failure2 = Validex.Failure.make([error2])
-      iex> Validex.Core.seq(failure1, failure2) === Validex.Failure.combine(failure1, failure2)
-      true
+      iex> Validex.Core.seq(failure1, failure2)
+      %Validex.Failure{errors: [error1, error2]}
   """
   @spec seq(validation_result_t, validation_result_t) :: validation_result_t
   def seq(f1 = %Failure{}, f2 = %Failure{}), do: Failure.combine(f1, f2)
@@ -174,9 +174,7 @@ defmodule Validex.Core do
       iex> failure1 = Validex.Failure.make([error1])
       iex> failure2 = Validex.Failure.make([error2])
       iex> Validex.Core.validate(fn a, b -> {a, b} end, [failure1, failure2])
-      %Validex.Failure{
-         errors: [Validex.Error.make(:hello, "not allowed", nil),
-                  Validex.Error.make(:world, "not allowed", nil)]}
+      %Validex.Failure{errors: [error1, error2]}
   """
   @spec validate(function(), [validation_result_t]) :: validation_result_t
   def validate(result_f, validations) do
@@ -199,9 +197,7 @@ defmodule Validex.Core do
       iex> failure1 = Validex.Failure.make([error1])
       iex> failure2 = Validex.Failure.make([error2])
       iex> Validex.Core.sequence([failure1, failure2])
-      %Validex.Failure{
-         errors: [Validex.Error.make(:hello, "not allowed", nil),
-                  Validex.Error.make(:world, "not allowed", nil)]}
+      %Validex.Failure{errors: [error1, error2]}
   """
   @spec sequence([validation_result_t]) :: validation_result_t
   def sequence([]), do: pure([])
@@ -213,8 +209,9 @@ defmodule Validex.Core do
 
   @doc ~S"""
   Does the same as `Validex.Core.sequence/1` but applies a validation function
-  to all candidates first. Takes an optional label to augment the results, including
-  the index.
+  to all candidates first.
+  Takes an optional label to augment the results, including the index. Uses :seq if
+  none is given.
 
   ## Examples
 
@@ -271,8 +268,7 @@ defmodule Validex.Core do
       iex> failure_fn = fn c -> [Validex.Error.make(c, "not allowed", nil)] |> Validex.Failure.make() end
       iex> success_fn = fn _ -> Validex.Success.make(12) end
       iex> Validex.Core.validate_all([failure_fn, success_fn], :hello)
-      %Validex.Failure{
-          errors: [Validex.Error.make(:hello, "not allowed", {{:seq, 0}, nil})]}
+      %Validex.Failure{errors: [Validex.Error.make(:hello, "not allowed", {{:seq, 0}, nil})]}
   """
   @type validate_all_return_t :: {:ok, validation_result_t} | {:error, :no_validators}
   @spec validate_all([validation_fun_t], any(), [{:label, any()}]) :: validate_all_return_t
