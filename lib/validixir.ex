@@ -3,7 +3,6 @@ defmodule Validixir do
   Module containing all basic functionality needed for validation.
   """
 
-  # TODO: Module doc
   # TODO: Tests showing the whole thing
   # TODO: README
   # TODO: Deploy in hex
