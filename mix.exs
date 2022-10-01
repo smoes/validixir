@@ -4,7 +4,7 @@ defmodule Validixir.MixProject do
   def project do
     [
       app: :validixir,
-      version: "0.1.0",
+      version: "0.1.1",
       elixir: "~> 1.13",
       package: package(),
       start_permanent: Mix.env() == :prod,
@@ -33,7 +33,7 @@ defmodule Validixir.MixProject do
       # This option is only needed when you don't want to use the OTP application name
       name: "validixir",
       # These are the default files included in the package
-      licenses: ["Apache-2.0"],
+      licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/smoes/validixir"},
       source_url: "https://github.com/smoes/validixir",
       description: "Validixir brings powerful and reusable applicative-like validation to Elixir."
