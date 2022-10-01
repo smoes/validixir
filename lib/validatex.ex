@@ -1,4 +1,4 @@
-defmodule Validex do
+defmodule Validatex do
   @moduledoc """
   Module containing all basic functionality needed for validation.
   """
@@ -8,27 +8,27 @@ defmodule Validex do
   # TODO: README
   # TODO: Deploy in hex
 
-  alias Validex.Error, as: Error
-  alias Validex.Failure, as: Failure
-  alias Validex.Success, as: Success
+  alias Validatex.Error, as: Error
+  alias Validatex.Failure, as: Failure
+  alias Validatex.Success, as: Success
 
   use Currying
 
   @type validation_result_t(inner_t) :: Failure.t() | Success.t(inner_t)
 
   @doc ~S"""
-  Returns `true` if a value is either a [[Validex.Success]] or a [[Validex.Failure]],
+  Returns `true` if a value is either a [[Validatex.Success]] or a [[Validatex.Failure]],
   returns `false` else.
 
   ## Examples
 
-      iex> Validex.validation_result?(Validex.Success.make(12))
+      iex> Validatex.validation_result?(Validatex.Success.make(12))
       true
 
-      iex> Validex.validation_result?(Validex.Failure.make([]))
+      iex> Validatex.validation_result?(Validatex.Failure.make([]))
       true
 
-      iex> Validex.validation_result?(%{})
+      iex> Validatex.validation_result?(%{})
       false
   """
   @spec validation_result?(any()) :: boolean()
@@ -46,13 +46,13 @@ defmodule Validex do
 
   ## Examples
 
-      iex> success = Validex.Success.make(0)
-      iex> Validex.map_success(success, fn a -> a + 1 end)
-      %Validex.Success{candidate: 1}
+      iex> success = Validatex.Success.make(0)
+      iex> Validatex.map_success(success, fn a -> a + 1 end)
+      %Validatex.Success{candidate: 1}
 
-      iex> failure = Validex.Failure.make([])
-      iex> Validex.map_success(failure, fn a -> a + 1 end)
-      %Validex.Failure{errors: []}
+      iex> failure = Validatex.Failure.make([])
+      iex> Validatex.map_success(failure, fn a -> a + 1 end)
+      %Validatex.Failure{errors: []}
   """
   @spec map_success(
           validation_result_t(Success.some_inner_t()),
@@ -67,13 +67,13 @@ defmodule Validex do
 
   ## Examples
 
-      iex> success = Validex.Success.make(0)
-      iex> Validex.map_failure(success, fn a -> a + 1 end)
-      %Validex.Success{candidate: 0}
+      iex> success = Validatex.Success.make(0)
+      iex> Validatex.map_failure(success, fn a -> a + 1 end)
+      %Validatex.Success{candidate: 0}
 
-      iex> failure = Validex.Failure.make([Validex.Error.make(1, :hello, :hello)])
-      iex> Validex.map_failure(failure, fn err -> %Validex.Error{ err | candidate: 2} end)
-      %Validex.Failure{errors: [Validex.Error.make(2, :hello, :hello)]}
+      iex> failure = Validatex.Failure.make([Validatex.Error.make(1, :hello, :hello)])
+      iex> Validatex.map_failure(failure, fn err -> %Validatex.Error{ err | candidate: 2} end)
+      %Validatex.Failure{errors: [Validatex.Error.make(2, :hello, :hello)]}
   """
   @spec map_failure(validation_result_t(Success.some_inner_t()), (Error.t() -> Error.t())) ::
           validation_result_t(Success.some_inner_t())
@@ -86,13 +86,13 @@ defmodule Validex do
 
   ## Examples
 
-      iex> success = Validex.Success.make(0)
-      iex> Validex.map(success, fn a -> a + 1 end, fn _ -> :does_nothing end)
-      %Validex.Success{candidate: 1}
+      iex> success = Validatex.Success.make(0)
+      iex> Validatex.map(success, fn a -> a + 1 end, fn _ -> :does_nothing end)
+      %Validatex.Success{candidate: 1}
 
-      iex> failure = Validex.Failure.make([Validex.Error.make(1, :hello, :hello)])
-      iex> Validex.map(failure, fn _ -> :does_nothing end, fn err -> %Validex.Error{ err | candidate: 2} end)
-      %Validex.Failure{errors: [Validex.Error.make(2, :hello, :hello)]}
+      iex> failure = Validatex.Failure.make([Validatex.Error.make(1, :hello, :hello)])
+      iex> Validatex.map(failure, fn _ -> :does_nothing end, fn err -> %Validatex.Error{ err | candidate: 2} end)
+      %Validatex.Failure{errors: [Validatex.Error.make(2, :hello, :hello)]}
   """
   @spec map(
           validation_result_t(Success.some_inner_t()),
@@ -109,8 +109,8 @@ defmodule Validex do
 
   ## Examples
 
-      iex> Validex.pure(12)
-      %Validex.Success{candidate: 12}
+      iex> Validatex.pure(12)
+      %Validatex.Success{candidate: 12}
   """
   @spec pure(Success.some_inner_t()) :: Success.t(Success.some_inner_t())
   def pure(value), do: Success.make(value)
@@ -120,17 +120,17 @@ defmodule Validex do
 
   ## Examples
 
-      iex> Validex.pure(12) |> Validex.augment_contexts(Hello)
-      %Validex.Success{candidate: 12}
+      iex> Validatex.pure(12) |> Validatex.augment_contexts(Hello)
+      %Validatex.Success{candidate: 12}
 
-      iex> error_1 = Validex.Error.make(1, :message, Context)
-      iex> error_2 = Validex.Error.make(2, :message, AnotherContext)
-      iex> failure = Validex.Failure.make([error_1, error_2])
-      iex> Validex.augment_contexts(failure, AdditionalContext)
-      %Validex.Failure{
+      iex> error_1 = Validatex.Error.make(1, :message, Context)
+      iex> error_2 = Validatex.Error.make(2, :message, AnotherContext)
+      iex> failure = Validatex.Failure.make([error_1, error_2])
+      iex> Validatex.augment_contexts(failure, AdditionalContext)
+      %Validatex.Failure{
           errors: [
-              %Validex.Error{candidate: 1, message: :message, context: {AdditionalContext, Context}},
-              %Validex.Error{candidate: 2, message: :message, context: {AdditionalContext, AnotherContext}},
+              %Validatex.Error{candidate: 1, message: :message, context: {AdditionalContext, Context}},
+              %Validatex.Error{candidate: 2, message: :message, context: {AdditionalContext, AnotherContext}},
           ]
       }
   """
@@ -146,17 +146,17 @@ defmodule Validex do
 
   ## Examples
 
-      iex> Validex.pure(12) |> Validex.augment_messages(Hello)
-      %Validex.Success{candidate: 12}
+      iex> Validatex.pure(12) |> Validatex.augment_messages(Hello)
+      %Validatex.Success{candidate: 12}
 
-      iex> error_1 = Validex.Error.make(1, :message, Context)
-      iex> error_2 = Validex.Error.make(2, :another_message, Context)
-      iex> failure = Validex.Failure.make([error_1, error_2])
-      iex> Validex.augment_messages(failure, :additional_message)
-      %Validex.Failure{
+      iex> error_1 = Validatex.Error.make(1, :message, Context)
+      iex> error_2 = Validatex.Error.make(2, :another_message, Context)
+      iex> failure = Validatex.Failure.make([error_1, error_2])
+      iex> Validatex.augment_messages(failure, :additional_message)
+      %Validatex.Failure{
           errors: [
-              %Validex.Error{candidate: 1, message: {:additional_message, :message}, context: Context},
-              %Validex.Error{candidate: 2, message: {:additional_message, :another_message}, context: Context}
+              %Validatex.Error{candidate: 1, message: {:additional_message, :message}, context: Context},
+              %Validatex.Error{candidate: 2, message: {:additional_message, :another_message}, context: Context}
           ]
       }
   """
@@ -172,17 +172,17 @@ defmodule Validex do
 
   ## Examples
 
-      iex> Validex.pure(12) |> Validex.override_messages(Hello)
-      %Validex.Success{candidate: 12}
+      iex> Validatex.pure(12) |> Validatex.override_messages(Hello)
+      %Validatex.Success{candidate: 12}
 
-      iex> error_1 = Validex.Error.make(1, :message, Context)
-      iex> error_2 = Validex.Error.make(2, :another_message, Context)
-      iex> failure = Validex.Failure.make([error_1, error_2])
-      iex> Validex.override_messages(failure, :additional_message)
-      %Validex.Failure{
+      iex> error_1 = Validatex.Error.make(1, :message, Context)
+      iex> error_2 = Validatex.Error.make(2, :another_message, Context)
+      iex> failure = Validatex.Failure.make([error_1, error_2])
+      iex> Validatex.override_messages(failure, :additional_message)
+      %Validatex.Failure{
           errors: [
-              %Validex.Error{candidate: 1, message: :additional_message, context: Context},
-              %Validex.Error{candidate: 2, message: :additional_message, context: Context}
+              %Validatex.Error{candidate: 1, message: :additional_message, context: Context},
+              %Validatex.Error{candidate: 2, message: :additional_message, context: Context}
           ]
       }
   """
@@ -196,17 +196,17 @@ defmodule Validex do
 
   ## Examples
 
-      iex> Validex.pure(12) |> Validex.override_contexts(Hello)
-      %Validex.Success{candidate: 12}
+      iex> Validatex.pure(12) |> Validatex.override_contexts(Hello)
+      %Validatex.Success{candidate: 12}
 
-      iex> error_1 = Validex.Error.make(1, :message, Context)
-      iex> error_2 = Validex.Error.make(2, :another_message, Context)
-      iex> failure = Validex.Failure.make([error_1, error_2])
-      iex> Validex.override_contexts(failure, NewContext)
-      %Validex.Failure{
+      iex> error_1 = Validatex.Error.make(1, :message, Context)
+      iex> error_2 = Validatex.Error.make(2, :another_message, Context)
+      iex> failure = Validatex.Failure.make([error_1, error_2])
+      iex> Validatex.override_contexts(failure, NewContext)
+      %Validatex.Failure{
           errors: [
-          %Validex.Error{candidate: 1, message: :message, context: NewContext},
-          %Validex.Error{candidate: 2, message: :another_message, context: NewContext}
+          %Validatex.Error{candidate: 1, message: :message, context: NewContext},
+          %Validatex.Error{candidate: 2, message: :another_message, context: NewContext}
           ]
       }
   """
@@ -225,23 +225,23 @@ defmodule Validex do
 
   ## Examples
 
-      iex> s1 = Validex.Success.make(fn a -> a + 1 end)
-      iex> s2 = Validex.Success.make(0)
-      iex> Validex.seq(s1, s2)
-      %Validex.Success{candidate: 1}
+      iex> s1 = Validatex.Success.make(fn a -> a + 1 end)
+      iex> s2 = Validatex.Success.make(0)
+      iex> Validatex.seq(s1, s2)
+      %Validatex.Success{candidate: 1}
 
-      iex> error = Validex.Error.make(:hello, "not allowed", nil)
-      iex> failure = Validex.Failure.make([error])
-      iex> success = Validex.Success.make(1)
-      iex> Validex.seq(failure, success)
-      %Validex.Failure{errors: [error]}
+      iex> error = Validatex.Error.make(:hello, "not allowed", nil)
+      iex> failure = Validatex.Failure.make([error])
+      iex> success = Validatex.Success.make(1)
+      iex> Validatex.seq(failure, success)
+      %Validatex.Failure{errors: [error]}
 
-      iex> error1 = Validex.Error.make(:hello, "not allowed", nil)
-      iex> error2 = Validex.Error.make(:world, "not allowed", nil)
-      iex> failure1 = Validex.Failure.make([error1])
-      iex> failure2 = Validex.Failure.make([error2])
-      iex> Validex.seq(failure1, failure2)
-      %Validex.Failure{errors: [error1, error2]}
+      iex> error1 = Validatex.Error.make(:hello, "not allowed", nil)
+      iex> error2 = Validatex.Error.make(:world, "not allowed", nil)
+      iex> failure1 = Validatex.Failure.make([error1])
+      iex> failure2 = Validatex.Failure.make([error2])
+      iex> Validatex.seq(failure1, failure2)
+      %Validatex.Failure{errors: [error1, error2]}
   """
   @spec seq(
           validation_result_t((Success.some_inner_t() -> any())),
@@ -268,11 +268,11 @@ defmodule Validex do
 
   ## Examples
 
-      iex> Validex.Success.make(0) |> Validex.and_then(fn x -> Validex.Success.make(x + 1) end)
-      %Validex.Success{candidate: 1}
+      iex> Validatex.Success.make(0) |> Validatex.and_then(fn x -> Validatex.Success.make(x + 1) end)
+      %Validatex.Success{candidate: 1}
 
-      iex> Validex.Failure.make([]) |> Validex.and_then(fn x -> x + 1 end)
-      %Validex.Failure{errors: []}
+      iex> Validatex.Failure.make([]) |> Validatex.and_then(fn x -> x + 1 end)
+      %Validatex.Failure{errors: []}
   """
   @spec and_then(
           validation_result_t(Success.some_inner_t()),
@@ -288,15 +288,15 @@ defmodule Validex do
 
   ## Examples
 
-      iex> Validex.validate(fn a, b -> {a, b} end, [Validex.Success.make(1), Validex.Success.make(2)])
-      %Validex.Success{candidate: {1,2}}
+      iex> Validatex.validate(fn a, b -> {a, b} end, [Validatex.Success.make(1), Validatex.Success.make(2)])
+      %Validatex.Success{candidate: {1,2}}
 
-      iex> error1 = Validex.Error.make(:hello, "not allowed", nil)
-      iex> error2 = Validex.Error.make(:world, "not allowed", nil)
-      iex> failure1 = Validex.Failure.make([error1])
-      iex> failure2 = Validex.Failure.make([error2])
-      iex> Validex.validate(fn a, b -> {a, b} end, [failure1, failure2])
-      %Validex.Failure{errors: [error1, error2]}
+      iex> error1 = Validatex.Error.make(:hello, "not allowed", nil)
+      iex> error2 = Validatex.Error.make(:world, "not allowed", nil)
+      iex> failure1 = Validatex.Failure.make([error1])
+      iex> failure2 = Validatex.Failure.make([error2])
+      iex> Validatex.validate(fn a, b -> {a, b} end, [failure1, failure2])
+      %Validatex.Failure{errors: [error1, error2]}
   """
   @spec validate(function(), [validation_result_t(any())]) :: validation_result_t(any())
   def validate(result_f, validations) do
@@ -311,15 +311,15 @@ defmodule Validex do
 
   ## Examples
 
-      iex> Validex.sequence([Validex.Success.make(1), Validex.Success.make(2)])
-      %Validex.Success{candidate: [1,2]}
+      iex> Validatex.sequence([Validatex.Success.make(1), Validatex.Success.make(2)])
+      %Validatex.Success{candidate: [1,2]}
 
-      iex> error1 = Validex.Error.make(:hello, "not allowed", nil)
-      iex> error2 = Validex.Error.make(:world, "not allowed", nil)
-      iex> failure1 = Validex.Failure.make([error1])
-      iex> failure2 = Validex.Failure.make([error2])
-      iex> Validex.sequence([failure1, failure2])
-      %Validex.Failure{errors: [error1, error2]}
+      iex> error1 = Validatex.Error.make(:hello, "not allowed", nil)
+      iex> error2 = Validatex.Error.make(:world, "not allowed", nil)
+      iex> failure1 = Validatex.Failure.make([error1])
+      iex> failure2 = Validatex.Failure.make([error2])
+      iex> Validatex.sequence([failure1, failure2])
+      %Validatex.Failure{errors: [error1, error2]}
   """
   @spec sequence([validation_result_t(Success.some_inner_t())]) ::
           validation_result_t([Success.some_inner_t()])
@@ -332,22 +332,22 @@ defmodule Validex do
   @type validation_fun_t(result_t) :: (any() -> validation_result_t(result_t))
 
   @doc ~S"""
-  Does the same as `Validex.sequence/1` but applies a validation function
+  Does the same as `Validatex.sequence/1` but applies a validation function
   to all candidates first.
   Takes an optional context to augment the results, including the index. Uses :seq if
   none is given.
 
   ## Examples
 
-      iex> success_fn = fn c -> Validex.Success.make(c) end
-      iex> Validex.sequence_of([1, 2], success_fn)
-      %Validex.Success{candidate: [1,2]}
+      iex> success_fn = fn c -> Validatex.Success.make(c) end
+      iex> Validatex.sequence_of([1, 2], success_fn)
+      %Validatex.Success{candidate: [1,2]}
 
-      iex> failure_fn = fn c -> [Validex.Error.make(c, "not allowed", nil)] |> Validex.Failure.make() end
-      iex> Validex.sequence_of([:hello, :world], failure_fn)
-      %Validex.Failure{
-          errors: [Validex.Error.make(:hello, {{:index, 0}, "not allowed"}, nil),
-                   Validex.Error.make(:world, {{:index, 1}, "not allowed"}, nil)]}
+      iex> failure_fn = fn c -> [Validatex.Error.make(c, "not allowed", nil)] |> Validatex.Failure.make() end
+      iex> Validatex.sequence_of([:hello, :world], failure_fn)
+      %Validatex.Failure{
+          errors: [Validatex.Error.make(:hello, {{:index, 0}, "not allowed"}, nil),
+                   Validatex.Error.make(:world, {{:index, 1}, "not allowed"}, nil)]}
   """
   @spec sequence_of([any()], validation_fun_t(Success.some_inner_t())) ::
           validation_result_t(Success.some_inner_t())
@@ -365,19 +365,19 @@ defmodule Validex do
   Returns a success containing the candidate if each validation function returns a success.
   Else returns a validation failure containing errors of each failed validation.
 
-  Takes an optional context as in `Validex.sequence_of/3`.
+  Takes an optional context as in `Validatex.sequence_of/3`.
 
   ## Examples
 
-      iex> success_fn_1 = fn c -> Validex.Success.make(c) end
-      iex> success_fn_2 = fn _ -> Validex.Success.make(12) end
-      iex> Validex.validate_all([success_fn_1, success_fn_2], 1)
-      %Validex.Success{candidate: 1}
+      iex> success_fn_1 = fn c -> Validatex.Success.make(c) end
+      iex> success_fn_2 = fn _ -> Validatex.Success.make(12) end
+      iex> Validatex.validate_all([success_fn_1, success_fn_2], 1)
+      %Validatex.Success{candidate: 1}
 
-      iex> failure_fn = fn c -> [Validex.Error.make(c, "not allowed", nil)] |> Validex.Failure.make() end
-      iex> success_fn = fn _ -> Validex.Success.make(12) end
-      iex> Validex.validate_all([failure_fn, success_fn], :hello)
-      %Validex.Failure{errors: [Validex.Error.make(:hello, {{:index, 0}, "not allowed"}, nil)]}
+      iex> failure_fn = fn c -> [Validatex.Error.make(c, "not allowed", nil)] |> Validatex.Failure.make() end
+      iex> success_fn = fn _ -> Validatex.Success.make(12) end
+      iex> Validatex.validate_all([failure_fn, success_fn], :hello)
+      %Validatex.Failure{errors: [Validatex.Error.make(:hello, {{:index, 0}, "not allowed"}, nil)]}
   """
   @type validate_all_return_t(inner_t) ::
           {:ok, validation_result_t(inner_t)} | {:error, :no_validators}
@@ -395,8 +395,8 @@ defmodule Validex do
       |> sequence
 
     case validated do
-      %Validex.Success{} -> Validex.Success.make(candidate)
-      %Validex.Failure{} -> validated
+      %Validatex.Success{} -> Validatex.Success.make(candidate)
+      %Validatex.Failure{} -> validated
     end
   end
 end
