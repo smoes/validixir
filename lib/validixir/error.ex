@@ -1,4 +1,4 @@
-defmodule Validatex.Error do
+defmodule Validixir.Error do
   @moduledoc """
   Module containing data definition and functionality concering an Error.
   An Error is a struct representing a concrete error in validation.
@@ -28,8 +28,8 @@ defmodule Validatex.Error do
 
   ## Examples
 
-      iex> Validatex.Error.with_context(Validatex.Error.make(12, :message, Context), NewContext)
-      %Validatex.Error{candidate: 12, message: :message, context: NewContext}
+      iex> Validixir.Error.with_context(Validixir.Error.make(12, :message, Context), NewContext)
+      %Validixir.Error{candidate: 12, message: :message, context: NewContext}
   """
   @spec with_context(t(), any()) :: t()
   def with_context(error, context), do: %Error{error | context: context}
@@ -39,8 +39,8 @@ defmodule Validatex.Error do
 
   ## Examples
 
-      iex> Validatex.Error.with_message(Validatex.Error.make(12, :message, Context), :new_message)
-      %Validatex.Error{candidate: 12, message: :new_message, context: Context}
+      iex> Validixir.Error.with_message(Validixir.Error.make(12, :message, Context), :new_message)
+      %Validixir.Error{candidate: 12, message: :new_message, context: Context}
   """
   @spec with_message(t(), any()) :: t()
   def with_message(error, message), do: %Error{error | message: message}
@@ -50,8 +50,8 @@ defmodule Validatex.Error do
 
   ## Examples
 
-      iex> Validatex.Error.augment_message(Validatex.Error.make(12, :message, Context), :new_message)
-      %Validatex.Error{candidate: 12, message: {:new_message, :message}, context: Context}
+      iex> Validixir.Error.augment_message(Validixir.Error.make(12, :message, Context), :new_message)
+      %Validixir.Error{candidate: 12, message: {:new_message, :message}, context: Context}
   """
   @spec augment_message(t(), any()) :: t()
   def augment_message(error = %Error{message: message}, additional_message),
@@ -62,8 +62,8 @@ defmodule Validatex.Error do
 
   ## Examples
 
-      iex> Validatex.Error.augment_context(Validatex.Error.make(12, :message, Context), NewContext)
-      %Validatex.Error{candidate: 12, message: :message, context: {NewContext, Context}}
+      iex> Validixir.Error.augment_context(Validixir.Error.make(12, :message, Context), NewContext)
+      %Validixir.Error{candidate: 12, message: :message, context: {NewContext, Context}}
   """
   @spec augment_context(t(), any()) :: t()
   def augment_context(error = %Error{context: context}, additional_context),

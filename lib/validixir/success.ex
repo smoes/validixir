@@ -1,4 +1,4 @@
-defmodule Validatex.Success do
+defmodule Validixir.Success do
   @moduledoc """
   Module containing data definition and functionality concering a Success.
   An Succes is a struct representing a successful validation.
@@ -26,8 +26,8 @@ defmodule Validatex.Success do
 
   ## Examples
 
-      iex> Validatex.Success.map(Validatex.Success.make(0), fn a -> a + 1 end)
-      %Validatex.Success{candidate: 1}
+      iex> Validixir.Success.map(Validixir.Success.make(0), fn a -> a + 1 end)
+      %Validixir.Success{candidate: 1}
   """
   @spec map(t(some_inner_t()), (some_inner_t() -> any())) :: t(any())
   def map(%Success{candidate: candidate}, f), do: f.(candidate) |> make()
@@ -37,12 +37,12 @@ defmodule Validatex.Success do
 
   ## Examples
 
-      iex> f = Validatex.Failure.make([])
-      iex> Validatex.Success.success?(f)
+      iex> f = Validixir.Failure.make([])
+      iex> Validixir.Success.success?(f)
       false
 
-      iex> s = Validatex.Success.make(1)
-      iex> Validatex.Success.success?(s)
+      iex> s = Validixir.Success.make(1)
+      iex> Validixir.Success.success?(s)
       true
   """
   @spec success?(any()) :: boolean()
