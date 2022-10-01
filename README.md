@@ -1,14 +1,14 @@
 # Validixir
 
 ![Tests](https://github.com/smoes/validixir/actions/workflows/main.yaml/badge.svg)
+[![Hex version badge](https://img.shields.io/hexpm/v/validixir.svg)](https://hex.pm/packages/validixir)
 
 Validixir brings powerful and reusable applicative validation to Elixir.
 
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `validixir` to your list of dependencies in `mix.exs`:
+The package can be installed by adding `validixir` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
@@ -18,7 +18,5 @@ def deps do
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/validixir>.
-
+## Documentation
+The documentation can be found on [HexDocs](https://hexdocs.pm/validixir).
