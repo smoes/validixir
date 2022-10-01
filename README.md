@@ -13,7 +13,7 @@ The package can be installed by adding `validixir` to your list of dependencies 
 ```elixir
 def deps do
   [
-    {:validixir, "~> 0.1.0"}
+    {:validixir, "~> 0.1.1"}
   ]
 end
 ```
