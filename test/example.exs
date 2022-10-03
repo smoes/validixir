@@ -9,7 +9,13 @@ defmodule Example do
 
   defmodule Address do
     alias __MODULE__
-    @type t :: %Address{street: String.t(), number: pos_integer(), city: String.t(), zip: String.t()}
+
+    @type t :: %Address{
+            street: String.t(),
+            number: pos_integer(),
+            city: String.t(),
+            zip: String.t()
+          }
 
     @enforce_keys [:street, :number, :city, :zip]
     defstruct [:street, :number, :city, :zip]
@@ -17,7 +23,8 @@ defmodule Example do
     defp make_unsafe(street, number, city, zip),
       do: %Address{street: street, number: number, city: city, zip: zip}
 
-    @spec make(String.t(), pos_integer(), String.t(), String.t()) :: Validixir.validation_result_t(t())
+    @spec make(String.t(), pos_integer(), String.t(), String.t()) ::
+            Validixir.validation_result_t(t())
     def make(street, number, city, zip) do
       # We validate the domain object in the constructor.
       # If we only use that function to create addresses, all addresses
@@ -41,7 +48,13 @@ defmodule Example do
 
   defmodule Person do
     alias __MODULE__
-    @type t :: %Person{name: String.t(), username: String.t(), email: String.t(), address: Address.t()}
+
+    @type t :: %Person{
+            name: String.t(),
+            username: String.t(),
+            email: String.t(),
+            address: Address.t()
+          }
 
     @enforce_keys [:name, :username, :email, :address]
     defstruct [:name, :username, :email, :address]

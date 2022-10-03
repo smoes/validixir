@@ -18,12 +18,13 @@ defmodule ValidixirTest do
       assert %Failure{} = failure
 
       context = {Example.Address, Validixir.Validations}
+
       assert failure.errors == [
-        Error.make(street, :not_a_binary, context),
-        Error.make(number,  :not_a_positive_integer, context),
-        Error.make(zip, :not_a_binary, context),
-        Error.make(city, :not_a_binary, context),
-      ]
+               Error.make(street, :not_a_binary, context),
+               Error.make(number, :not_a_positive_integer, context),
+               Error.make(zip, :not_a_binary, context),
+               Error.make(city, :not_a_binary, context)
+             ]
     end
 
     test "does construct valid addresses" do
@@ -52,11 +53,11 @@ defmodule ValidixirTest do
       assert %Failure{} = failure
 
       assert failure.errors == [
-        Error.make(name, :not_a_binary, {Example.Person, Validixir.Validations}),
-        Error.make(username,  :longer_than_10, Example.Person),
-        Error.make(email, :not_an_email, Example.Person),
-        Error.make(address, :not_an_address, Example.Person),
-      ]
+               Error.make(name, :not_a_binary, {Example.Person, Validixir.Validations}),
+               Error.make(username, :longer_than_10, Example.Person),
+               Error.make(email, :not_an_email, Example.Person),
+               Error.make(address, :not_an_address, Example.Person)
+             ]
     end
 
     test "does construct valid persons" do
@@ -71,10 +72,13 @@ defmodule ValidixirTest do
       zip = "99999"
       city = "New York"
 
-      result = Example.Address.make(street, number, city, zip)
-      # then ignore what the result would be and just continue
-      # as if it is a success
-      |> Validixir.and_then(fn address -> Example.Person.make(name, username, email, address) end)
+      result =
+        Example.Address.make(street, number, city, zip)
+        # then ignore what the result would be and just continue
+        # as if it is a success
+        |> Validixir.and_then(fn address ->
+          Example.Person.make(name, username, email, address)
+        end)
 
       assert %Success{} = result
       candidate = result.candidate
@@ -83,8 +87,6 @@ defmodule ValidixirTest do
       assert candidate.username == username
       assert candidate.email == email
       # we dont have to check address - we know it's valid :)
-
     end
   end
-  
 end
