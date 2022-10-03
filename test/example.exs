@@ -38,6 +38,9 @@ defmodule Example do
           Validations.binary(zip)
         ]
       )
+      # We augment the context here, so that we see, the errors occur in
+      # Example.Address. This seems trivial but can be hard to track in
+      # huge projects.
       |> Validixir.augment_contexts(Example.Address)
     end
 
