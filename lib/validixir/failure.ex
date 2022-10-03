@@ -27,7 +27,7 @@ defmodule Validixir.Failure do
   ## Examples
 
       iex> Validixir.Failure.make_from_error(12, :twelve_not_allowed, SomeContext)
-      %Validixir.Failure{errors: [Validixir.Error{candidate: 12, message: :twelve_not_alloed, context: SomeContext}]}
+      %Validixir.Failure{errors: [%Validixir.Error{candidate: 12, message: :twelve_not_allowed, context: SomeContext}]}
   """
   @spec make_from_error(any(), any(), any()) :: t()
   def make_from_error(candidate, message, context),

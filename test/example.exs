@@ -9,7 +9,7 @@ defmodule Example do
 
   defmodule Address do
     alias __MODULE__
-    @type t :: %Address{street: string(), number: pos_int(), city: string(), zip: string()}
+    @type t :: %Address{street: String.t(), number: pos_integer(), city: String.t(), zip: String.t()}
 
     @enforce_keys [:street, :number, :city, :zip]
     defstruct [:street, :number, :city, :zip]
@@ -17,7 +17,7 @@ defmodule Example do
     defp make_unsafe(street, number, city, zip),
       do: %Address{street: street, number: number, city: city, zip: zip}
 
-    @spec make(string(), pos_int(), string(), string()) :: Validixir.validation_result_t(t())
+    @spec make(String.t(), pos_integer(), String.t(), String.t()) :: Validixir.validation_result_t(t())
     def make(street, number, city, zip) do
       # We validate the domain object in the constructor.
       # If we only use that function to create addresses, all addresses
@@ -41,7 +41,7 @@ defmodule Example do
 
   defmodule Person do
     alias __MODULE__
-    @type t :: %Person{name: string(), username: string(), email: string(), address: Address.t()}
+    @type t :: %Person{name: String.t(), username: String.t(), email: String.t(), address: Address.t()}
 
     @enforce_keys [:name, :username, :email, :address]
     defstruct [:name, :username, :email, :address]
@@ -49,7 +49,7 @@ defmodule Example do
     defp make_unsafe(name, username, email, address),
       do: %Person{name: name, username: username, email: email, address: address}
 
-    @spec validate_username_helper(string()) :: Validixir.validation_result_t(string())
+    @spec validate_username_helper(String.t()) :: Validixir.validation_result_t(String.t())
     defp validate_username_helper(username) do
       # We write our own validation here.
       # Validators are nothing more than functions that return a validation result.
@@ -65,18 +65,18 @@ defmodule Example do
       end
     end
 
-    @spec validate_username(any()) :: Validixir.validation_result_t(string())
+    @spec validate_username(any()) :: Validixir.validation_result_t(String.t())
     defp validate_username(username),
       # here we combine already existing validation with our own custom validation
       do: Validations.binary(username) |> Validixir.and_then(&validate_username_helper/1)
 
     @spec validate_is_address(any()) :: Validixir.validation_result_t(Address.t())
-    defp validate_is_address(address = %Adress{}), do: Success.make(address)
+    defp validate_is_address(address = %Address{}), do: Success.make(address)
 
-    defp validate_is_address(%Adress{}),
+    defp validate_is_address(address),
       do: Failure.make_from_error(address, :not_an_address, Example.Person)
 
-    @spec validate_email_helper(string()) :: Validxir.validation_result_t(string())
+    @spec validate_email_helper(String.t()) :: Validxir.validation_result_t(String.t())
     defp validate_email_helper(email) do
       # this ofc isn't enough ;)
       if String.contains?(email, "@") do
@@ -86,11 +86,11 @@ defmodule Example do
       end
     end
 
-    @spec validate_email(any()) :: Validixr.validation_result_t(string())
+    @spec validate_email(any()) :: Validixr.validation_result_t(String.t())
     defp validate_email(email),
-      do: Validation.binary(email) |> Validixir.and_then(&validate_email_helper/1)
+      do: Validations.binary(email) |> Validixir.and_then(&validate_email_helper/1)
 
-    @spec make(string(), string(), string(), Address.t()) :: t()
+    @spec make(String.t(), String.t(), String.t(), Address.t()) :: t()
     def make(name, username, email, address) do
       # We validate the domain object in the constructor.
       # If we only use that function to create persons, all persons

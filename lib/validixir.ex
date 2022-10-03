@@ -3,10 +3,6 @@ defmodule Validixir do
   Module containing all basic functionality needed for validation.
   """
 
-  # TODO: Tests showing the whole thing
-  # TODO: README
-  # TODO: Deploy in hex
-
   alias Validixir.Error, as: Error
   alias Validixir.Failure, as: Failure
   alias Validixir.Success, as: Success
