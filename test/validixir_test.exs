@@ -43,7 +43,7 @@ defmodule ValidixirTest do
       assert candidate.city == city
     end
 
-    test "does not construct valid persons" do
+    test "does not construct invalid persons" do
       name = 1
       username = "this username is too long"
       email = "not an email"
