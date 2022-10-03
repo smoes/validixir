@@ -24,7 +24,7 @@ defmodule Validixir.Error do
     do: %Error{candidate: candidate, message: message, context: context}
 
   @doc ~S"""
-  Overrides the context of an error
+  Overrides the context of an error.
 
   ## Examples
 
@@ -35,7 +35,7 @@ defmodule Validixir.Error do
   def with_context(error, context), do: %Error{error | context: context}
 
   @doc ~S"""
-  Overrides the message of an error
+  Overrides the message of an error.
 
   ## Examples
 
@@ -46,7 +46,7 @@ defmodule Validixir.Error do
   def with_message(error, message), do: %Error{error | message: message}
 
   @doc ~S"""
-  Augments the message of an error
+  Augments the message of an error.
 
   ## Examples
 
@@ -58,7 +58,7 @@ defmodule Validixir.Error do
     do: with_message(error, {additional_message, message})
 
   @doc ~S"""
-  Augments the context of an error
+  Augments the context of an error.
 
   ## Examples
 

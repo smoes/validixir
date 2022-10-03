@@ -9,10 +9,19 @@ defmodule Validixir do
 
   use Currying
 
+  @typedoc """
+  A validation result is one of the following:
+
+  * A failure
+  * A success
+
+  The type represents the possible results of a validation.
+  The type takes a parameter that sets the candidate type in case of a success.
+  """
   @type validation_result_t(inner_t) :: Failure.t() | Success.t(inner_t)
 
   @doc ~S"""
-  Returns `true` if a value is either a [[Validixir.Success]] or a [[Validixir.Failure]],
+  Returns `true` if a value is either a `Validixir.Success` or a `Validixir.Failure`,
   returns `false` else.
 
   ## Examples
@@ -57,7 +66,7 @@ defmodule Validixir do
   def map_success(failure = %Failure{}, _), do: failure
 
   @doc ~S"""
-  Applies a function to the errors of a failure. If a success is passed it is
+  Applies a function to each of the errors of a failure. If a success is passed it is
   returned unchanged.
 
   ## Examples
@@ -77,7 +86,7 @@ defmodule Validixir do
 
   @doc ~S"""
   Takes a validation result and two functions that are applied as in map_success/2 and
-  map_failure/2 respectivly.
+  map_failure/2 respectively.
 
   ## Examples
 
@@ -111,7 +120,7 @@ defmodule Validixir do
   def pure(value), do: Success.make(value)
 
   @doc ~S"""
-  Augments a failure's contexts if a failure is passed, else returns the success.
+  Augments a failure's error contexts if a failure is passed, else returns the success.
 
   ## Examples
 
@@ -137,7 +146,7 @@ defmodule Validixir do
     do: map_failure(f, fn error -> Error.augment_context(error, additional_context) end)
 
   @doc ~S"""
-  Augments a failure's messages if a failure is passed, else returns the success.
+  Augments a failure's error messages if a failure is passed, else returns the success.
 
   ## Examples
 
@@ -163,7 +172,7 @@ defmodule Validixir do
     do: map_failure(f, fn error -> Error.augment_message(error, additional_message) end)
 
   @doc ~S"""
-  Overrides a failure's messages if a failure is passed, else returns the success.
+  Overrides a failure's error messages if a failure is passed, else returns the success.
 
   ## Examples
 
@@ -187,7 +196,7 @@ defmodule Validixir do
   def override_messages(f = %Failure{}, message), do: Failure.override_error_messages(f, message)
 
   @doc ~S"""
-  Overrides a failure's contexts if a failure is passed, else returns the success.
+  Overrides a failure's error contexts if a failure is passed, else returns the success.
 
   ## Examples
 
@@ -211,10 +220,9 @@ defmodule Validixir do
   def override_contexts(f = %Failure{}, context), do: Failure.override_error_contexts(f, context)
 
   @doc ~S"""
-  This function applies a function wrapped in a validation success to the
-  candidate of a validation success. If both validation results are failures
-  it returns them combined. If only the first one is a failure, this failure
-  is returned unchanged.
+  Applies a function wrapped in a validation success to the
+  candidate of another validation success. If both validation results are failures
+  it returns them combined. If only one is a failure, this failure is returned unchanged.
 
   This function is key in implementing applicatives.
 
@@ -244,6 +252,7 @@ defmodule Validixir do
         ) :: validation_result_t(any())
   def seq(f1 = %Failure{}, f2 = %Failure{}), do: Failure.combine(f1, f2)
   def seq(f1 = %Failure{}, _), do: f1
+  def seq(_, f2 = %Failure{}), do: f2
   def seq(%Success{candidate: f}, validation_result), do: map_success(validation_result, f)
 
   @doc !"""
@@ -257,8 +266,10 @@ defmodule Validixir do
   defp bind(%Success{candidate: candidate}, f), do: f.(candidate)
 
   @doc ~S"""
-  Takes a `validation_result_t()` and a functions that takes the candidate
-  in case of a success and returns a `validation_result_t()` again.
+  Takes a validation result and a function.
+  In case of a success the function is applied to the candidate and the result is returned.
+  In case of a failure that failure is returned unchanged.
+
   This function is used to chain validations.
 
   ## Examples
@@ -276,9 +287,10 @@ defmodule Validixir do
   def and_then(validation_result, f), do: bind(validation_result, f)
 
   @doc ~S"""
-  Takes a function that is called iff all validation results are Successes. The call
-  parameters are then the candidates in the respective order. Returns a validation success then,
-  with the candidate being the return value of this function.
+  Takes a function that is called iff all validation results are successes. The call
+  parameters are then the candidates in the respective order. The return value of this function
+  call is then wrapped as a success and returned.
+
   If there is at least one failure, errors get accumulated and a validation failure is returned.
 
   ## Examples
@@ -300,7 +312,7 @@ defmodule Validixir do
   end
 
   @doc ~S"""
-  Takes a list of validation results and returns a validation success containing list
+  Takes a list of validation results and returns a success that contains the list
   of all candidates, if all validation results are successes. Else all failures are
   combined and a validation failure is returned.
 
@@ -329,8 +341,6 @@ defmodule Validixir do
   @doc ~S"""
   Does the same as `Validixir.sequence/1` but applies a validation function
   to all candidates first.
-  Takes an optional context to augment the results, including the index. Uses :seq if
-  none is given.
 
   ## Examples
 
@@ -357,10 +367,8 @@ defmodule Validixir do
 
   @doc ~S"""
   Applies a list of validation functions to a candidate.
-  Returns a success containing the candidate if each validation function returns a success.
+  Returns a success that contains the candidate iff each validation function returns a success.
   Else returns a validation failure containing errors of each failed validation.
-
-  Takes an optional context as in `Validixir.sequence_of/3`.
 
   ## Examples
 
