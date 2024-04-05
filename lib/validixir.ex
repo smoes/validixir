@@ -343,9 +343,7 @@ defmodule Validixir do
           validation_result_t([Success.some_inner_t()])
   def sequence([]), do: pure([])
   def sequence([result]), do: result |> map_success(fn x -> [x] end)
-
-  def sequence([x | xs]),
-    do: validate(fn a, b -> [a | b] end, [x, sequence(xs)])
+  def sequence([x | xs]), do: validate(fn a, b -> [a | b] end, [x, sequence(xs)])
 
   @type validation_fun_t(result_t) :: (any() -> validation_result_t(result_t))
 
