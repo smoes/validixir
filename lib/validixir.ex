@@ -413,4 +413,8 @@ defmodule Validixir do
       %Validixir.Failure{} -> validated
     end
   end
+
+  defdelegate failure_from_error(candidate, message, context),
+    to: Validixir.Failure,
+    as: :make_from_error
 end
