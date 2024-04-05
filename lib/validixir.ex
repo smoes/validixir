@@ -120,6 +120,17 @@ defmodule Validixir do
   def pure(value), do: Success.make(value)
 
   @doc ~S"""
+  Same as `pure/1`.
+
+  ## Examples
+
+      iex> Validixir.success(12)
+      %Validixir.Success{candidate: 12}
+  """
+  @spec success(Success.some_inner_t()) :: Success.t(Success.some_inner_t())
+  def success(value), do: pure(value)
+
+  @doc ~S"""
   Augments a failure's error contexts if a failure is passed, else returns the success.
 
   ## Examples
