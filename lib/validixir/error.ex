@@ -51,11 +51,11 @@ defmodule Validixir.Error do
   ## Examples
 
       iex> Validixir.Error.augment_message(Validixir.Error.make(12, :message, Context), :new_message)
-      %Validixir.Error{candidate: 12, message: {:new_message, :message}, context: Context}
+      %Validixir.Error{candidate: 12, message: [:new_message, :message], context: Context}
   """
   @spec augment_message(t(), any()) :: t()
   def augment_message(error = %Error{message: message}, additional_message),
-    do: with_message(error, {additional_message, message})
+    do: with_message(error, [additional_message, message])
 
   @doc ~S"""
   Augments the context of an error.
@@ -63,9 +63,9 @@ defmodule Validixir.Error do
   ## Examples
 
       iex> Validixir.Error.augment_context(Validixir.Error.make(12, :message, Context), NewContext)
-      %Validixir.Error{candidate: 12, message: :message, context: {NewContext, Context}}
+      %Validixir.Error{candidate: 12, message: :message, context: [NewContext, Context]}
   """
   @spec augment_context(t(), any()) :: t()
   def augment_context(error = %Error{context: context}, additional_context),
-    do: with_context(error, {additional_context, context})
+    do: with_context(error, [additional_context, context])
 end

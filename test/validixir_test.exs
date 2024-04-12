@@ -17,7 +17,7 @@ defmodule ValidixirTest do
       failure = Example.Address.make(street, number, zip, city)
       assert %Failure{} = failure
 
-      context = {Example.Address, Validixir.Validations}
+      context = [Example.Address, Validixir.Validations]
 
       assert failure.errors == [
                Error.make(street, :not_a_binary, context),
@@ -53,7 +53,7 @@ defmodule ValidixirTest do
       assert %Failure{} = failure
 
       assert failure.errors == [
-               Error.make(name, :not_a_binary, {Example.Person, Validixir.Validations}),
+               Error.make(name, :not_a_binary, [Example.Person, Validixir.Validations]),
                Error.make(username, :longer_than_10, Example.Person),
                Error.make(email, :not_an_email, Example.Person),
                Error.make(address, :not_an_address, Example.Person)
