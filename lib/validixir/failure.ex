@@ -20,8 +20,9 @@ defmodule Validixir.Failure do
   @doc ~S"""
   Smart constructor of a failure.
   """
-  @spec make([any()]) :: t()
+  @spec make(any()) :: t()
   def make(errors) do
+    errors = List.wrap(errors)
     message_lookup = prepare_message_lookup(errors)
     %Failure{errors: errors, message_lookup: message_lookup}
   end
