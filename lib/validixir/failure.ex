@@ -1,13 +1,13 @@
 defmodule Validixir.Failure do
   @moduledoc """
-  Module containing data definition and functionality concering a Failure.
-  An Failure is a struct representing a failed validation.
+  Module containing data definition and functionality concerning a Failure.
+  A Failure is a struct representing a failed validation.
 
-  An Failure consists of the following:
+  A Failure consists of the following:
 
   * A list of Errors, displaying multiple causes for the validation to fail.
   * A message lookup that is a map with all messages as keys. This lookup is
-    used internally and should not be directly used 
+    used internally and should not be used directly.
   """
 
   alias __MODULE__
@@ -92,7 +92,7 @@ defmodule Validixir.Failure do
     do: map(failure, fn error -> Error.with_message(error, new_message) end)
 
   @doc ~S"""
-  Combines two errors. That is, appending their error list.
+  Combines two errors. That is, appending their error lists.
 
   ## Examples
 

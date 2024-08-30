@@ -1,6 +1,6 @@
 defmodule Validixir.Success do
   @moduledoc """
-  Module containing data definition and functionality concering a Success.
+  Module containing data definition and functionality concerning a Success.
   A Success is a :ok tuple representing a successful validation of a candidate.
 
   {:ok, candidate}

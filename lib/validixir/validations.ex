@@ -26,7 +26,7 @@ defmodule Validixir.Validations do
   def succeed(candidate), do: Core.pure(candidate)
 
   @doc ~S"""
-  Returns a validation success if the candidate is an atom, returns a failure else.
+  Returns a validation success if the candidate is an atom, returns a failure otherwise.
 
   ## Examples
 
@@ -46,7 +46,7 @@ defmodule Validixir.Validations do
   def atom(val), do: failure_from_error(val, :not_an_atom)
 
   @doc ~S"""
-  Returns a validation success if the candidate is a bitstring, returns a failure else.
+  Returns a validation success if the candidate is a bitstring, returns a failure otherwise.
 
   ## Examples
 
@@ -69,7 +69,7 @@ defmodule Validixir.Validations do
   def bitstring(val), do: failure_from_error(val, :not_a_bitstring)
 
   @doc ~S"""
-  Returns a validation success if the candidate is a binary, returns a failure else.
+  Returns a validation success if the candidate is a binary, returns a failure otherwise.
 
   ## Examples
 
@@ -89,7 +89,7 @@ defmodule Validixir.Validations do
   def binary(val), do: failure_from_error(val, :not_a_binary)
 
   @doc ~S"""
-  Returns a validation success if the candidate is a boolean, returns a failure else.
+  Returns a validation success if the candidate is a boolean, returns a failure otherwise.
 
   ## Examples
 
@@ -109,7 +109,7 @@ defmodule Validixir.Validations do
   def boolean(val), do: failure_from_error(val, :not_a_boolean)
 
   @doc ~S"""
-  Returns a validation success if the candidate is an exception, returns a failure else.
+  Returns a validation success if the candidate is an exception, returns a failure otherwise.
 
   ## Examples
 
@@ -129,7 +129,7 @@ defmodule Validixir.Validations do
   def exception(val), do: failure_from_error(val, :not_an_exception)
 
   @doc ~S"""
-  Returns a validation success if the candidate is a float, returns a failure else.
+  Returns a validation success if the candidate is a float, returns a failure otherwise.
 
   ## Examples
 
@@ -149,7 +149,7 @@ defmodule Validixir.Validations do
   def float(val), do: failure_from_error(val, :not_a_float)
 
   @doc ~S"""
-  Returns a validation success if the candidate is a function, returns a failure else.
+  Returns a validation success if the candidate is a function, returns a failure otherwise.
 
   ## Examples
 
@@ -169,7 +169,7 @@ defmodule Validixir.Validations do
   def function(val), do: failure_from_error(val, :not_a_function)
 
   @doc ~S"""
-  Returns a validation success if the candidate is an integer, returns a failure else.
+  Returns a validation success if the candidate is an integer, returns a failure otherwise.
 
   ## Examples
 
@@ -189,7 +189,7 @@ defmodule Validixir.Validations do
   def integer(val), do: failure_from_error(val, :not_an_integer)
 
   @doc ~S"""
-  Returns a validation success if the candidate is a positive integer, returns a failure else.
+  Returns a validation success if the candidate is a positive integer, returns a failure otherwise.
 
   ## Examples
 
@@ -215,7 +215,7 @@ defmodule Validixir.Validations do
   def pos_integer(val), do: failure_from_error(val, :not_a_positive_integer)
 
   @doc ~S"""
-  Returns a validation success if the candidate is a negative integer, returns a failure else.
+  Returns a validation success if the candidate is a negative integer, returns a failure otherwise.
 
   ## Examples
 
@@ -241,7 +241,7 @@ defmodule Validixir.Validations do
   def neg_integer(val), do: failure_from_error(val, :not_a_negative_integer)
 
   @doc ~S"""
-  Returns a validation success if the candidate is a list, returns a failure else.
+  Returns a validation success if the candidate is a list, returns a failure otherwise.
 
   ## Examples
 
@@ -263,7 +263,7 @@ defmodule Validixir.Validations do
   def list(val), do: failure_from_error(val, :not_a_list)
 
   @doc ~S"""
-  Returns a validation success if the candidate is an empty list, returns a failure else.
+  Returns a validation success if the candidate is an empty list, returns a failure otherwise.
 
   ## Examples
 
@@ -289,7 +289,7 @@ defmodule Validixir.Validations do
   def empty_list(val), do: failure_from_error(val, :not_an_empty_list)
 
   @doc ~S"""
-  Returns a validation success if the candidate is an non-empty list, returns a failure else.
+  Returns a validation success if the candidate is a non-empty list, returns a failure otherwise.
 
   ## Examples
 
@@ -315,7 +315,7 @@ defmodule Validixir.Validations do
   def non_empty_list(val), do: failure_from_error(val, :not_a_non_empty_list)
 
   @doc ~S"""
-  Returns a validation success if the candidate is a map, returns a failure else.
+  Returns a validation success if the candidate is a map, returns a failure otherwise.
 
   ## Examples
 
@@ -338,7 +338,7 @@ defmodule Validixir.Validations do
   def map(val), do: failure_from_error(val, :not_a_map)
 
   @doc ~S"""
-  Returns a validation success if the given map contains the given key, returns a failure else.
+  Returns a validation success if the given map contains the given key, returns a failure otherwise.
 
   ## Examples
 
@@ -357,8 +357,8 @@ defmodule Validixir.Validations do
   def map_key(m, k), do: failure_from_error({m, k}, :not_a_key_of_map)
 
   @doc ~S"""
-  Returns a validation success if the candidate is nil, returns a failure else.
-  Since all other names are special words in elixir, we chose `nil?` as the function name.
+  Returns a validation success if the candidate is nil, returns a failure otherwise.
+  Since all other names are special words in elixir, we chose `nil?` for the name of the function.
 
   ## Examples
 
@@ -377,7 +377,7 @@ defmodule Validixir.Validations do
   def nil?(val), do: failure_from_error(val, :not_nil)
 
   @doc ~S"""
-  Returns a validation success if the candidate is not nil, returns a failure else.
+  Returns a validation success if the candidate is not nil, returns a failure otherwise.
 
   ## Examples
 
@@ -396,7 +396,7 @@ defmodule Validixir.Validations do
   def not_nil(val), do: Core.pure(val)
 
   @doc ~S"""
-  Returns a validation success if the candidate is a number, returns a failure else.
+  Returns a validation success if the candidate is a number, returns a failure otherwise.
 
   ## Examples
 
@@ -418,7 +418,7 @@ defmodule Validixir.Validations do
   def number(val), do: failure_from_error(val, :not_a_number)
 
   @doc ~S"""
-  Returns a validation success if the candidate is a pid, returns a failure else.
+  Returns a validation success if the candidate is a pid, returns a failure otherwise.
 
   ## Examples
 
@@ -437,14 +437,14 @@ defmodule Validixir.Validations do
   def pid(val), do: failure_from_error(val, :not_a_pid)
 
   @doc ~S"""
-  Returns a validation success if the candidate is a port, returns a failure else.
+  Returns a validation success if the candidate is a port, returns a failure otherwise.
   """
   @spec port(any()) :: Core.validation_result_t(any())
   def port(val) when is_port(val), do: Core.pure(val)
   def port(val), do: failure_from_error(val, :not_a_port)
 
   @doc ~S"""
-  Returns a validation success if the candidate is a struct, returns a failure else.
+  Returns a validation success if the candidate is a struct, returns a failure otherwise.
 
   ## Examples
 
@@ -464,7 +464,7 @@ defmodule Validixir.Validations do
   def struct(val), do: failure_from_error(val, :not_a_struct)
 
   @doc ~S"""
-  Returns a validation success if the candidate is a reference, returns a failure else.
+  Returns a validation success if the candidate is a reference, returns a failure otherwise.
 
   ## Examples
 
@@ -484,7 +484,7 @@ defmodule Validixir.Validations do
   def reference(val), do: failure_from_error(val, :not_a_reference)
 
   @doc ~S"""
-  Returns a validation success if the candidate is a tuple, returns a failure else.
+  Returns a validation success if the candidate is a tuple, returns a failure otherwise.
 
   ## Examples
 
@@ -503,7 +503,7 @@ defmodule Validixir.Validations do
   def tuple(val), do: failure_from_error(val, :not_a_tuple)
 
   @doc ~S"""
-  Returns a validation success if the enum contains the elem, returns a failure else.
+  Returns a validation success if the enum contains the elem, returns a failure otherwise.
 
   ## Examples
 
@@ -534,7 +534,7 @@ defmodule Validixir.Validations do
   end
 
   @doc ~S"""
-  Returns a validation success if the enum does not contain the elem, returns a failure else.
+  Returns a validation success if the enum does not contain the elem, returns a failure otherwise.
 
   ## Examples
 
