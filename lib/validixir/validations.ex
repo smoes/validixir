@@ -14,12 +14,12 @@ defmodule Validixir.Validations do
     do: [Error.make(candidate, message, Validixir.Validations)] |> Failure.make()
 
   @doc ~S"""
-  Always returns a validation success. 
+  Always returns a validation success.
 
   ## Examples
 
       iex> Validixir.Validations.succeed(12)
-      %Validixir.Success{candidate: 12}
+      {:ok, 12}
 
   """
   @spec succeed(Success.some_inner_t()) :: Success.t(Success.some_inner_t())
@@ -31,7 +31,7 @@ defmodule Validixir.Validations do
   ## Examples
 
       iex> Validixir.Validations.atom(:hello)
-      %Validixir.Success{candidate: :hello}
+      {:ok, :hello}
 
       iex> Validixir.Validations.atom(12)
       %Validixir.Failure{errors: [
@@ -51,10 +51,10 @@ defmodule Validixir.Validations do
   ## Examples
 
       iex> Validixir.Validations.bitstring("foo")
-      %Validixir.Success{candidate: "foo"}
+      {:ok, "foo"}
 
       iex> Validixir.Validations.bitstring(<<1::3>>)
-      %Validixir.Success{candidate: <<1::3>>}
+      {:ok, <<1::3>>}
 
       iex> Validixir.Validations.bitstring(12)
       %Validixir.Failure{errors: [
@@ -74,7 +74,7 @@ defmodule Validixir.Validations do
   ## Examples
 
       iex> Validixir.Validations.binary("foo")
-      %Validixir.Success{candidate: "foo"}
+      {:ok, "foo"}
 
       iex> Validixir.Validations.binary(<<1::3>>)
       %Validixir.Failure{errors: [
@@ -94,7 +94,7 @@ defmodule Validixir.Validations do
   ## Examples
 
       iex> Validixir.Validations.boolean(true)
-      %Validixir.Success{candidate: true}
+      {:ok, true}
 
       iex> Validixir.Validations.boolean(nil)
       %Validixir.Failure{errors: [
@@ -114,7 +114,7 @@ defmodule Validixir.Validations do
   ## Examples
 
       iex> Validixir.Validations.exception(%RuntimeError{})
-      %Validixir.Success{candidate: %RuntimeError{}}
+      {:ok, %RuntimeError{}}
 
       iex> Validixir.Validations.exception(%{})
       %Validixir.Failure{errors: [
@@ -134,7 +134,7 @@ defmodule Validixir.Validations do
   ## Examples
 
       iex> Validixir.Validations.float(12.2)
-      %Validixir.Success{candidate: 12.2}
+      {:ok, 12.2}
 
       iex> Validixir.Validations.float(12)
       %Validixir.Failure{errors: [
@@ -154,7 +154,7 @@ defmodule Validixir.Validations do
   ## Examples
 
       iex> Validixir.Validations.function(&Validixir.pure/1)
-      %Validixir.Success{candidate: &Validixir.pure/1}
+      {:ok, &Validixir.pure/1}
 
       iex> Validixir.Validations.function(12)
       %Validixir.Failure{errors: [
@@ -174,7 +174,7 @@ defmodule Validixir.Validations do
   ## Examples
 
       iex> Validixir.Validations.integer(12)
-      %Validixir.Success{candidate: 12}
+      {:ok, 12}
 
       iex> Validixir.Validations.integer(12.2)
       %Validixir.Failure{errors: [
@@ -194,7 +194,7 @@ defmodule Validixir.Validations do
   ## Examples
 
       iex> Validixir.Validations.pos_integer(12)
-      %Validixir.Success{candidate: 12}
+      {:ok, 12}
 
       iex> Validixir.Validations.pos_integer(0)
       %Validixir.Failure{errors: [
@@ -220,7 +220,7 @@ defmodule Validixir.Validations do
   ## Examples
 
       iex> Validixir.Validations.neg_integer(-12)
-      %Validixir.Success{candidate: -12}
+      {:ok, -12}
 
       iex> Validixir.Validations.neg_integer(0)
       %Validixir.Failure{errors: [
@@ -246,10 +246,10 @@ defmodule Validixir.Validations do
   ## Examples
 
       iex> Validixir.Validations.list([1, 2, 3])
-      %Validixir.Success{candidate: [1,2,3]}
+      {:ok, [1,2,3]}
 
       iex> Validixir.Validations.list([])
-      %Validixir.Success{candidate: []}
+      {:ok, []}
 
       iex> Validixir.Validations.list(%{})
       %Validixir.Failure{errors: [
@@ -268,7 +268,7 @@ defmodule Validixir.Validations do
   ## Examples
 
       iex> Validixir.Validations.empty_list([])
-      %Validixir.Success{candidate: []}
+      {:ok, []}
 
       iex> Validixir.Validations.empty_list([1,2,3])
       %Validixir.Failure{errors: [
@@ -294,7 +294,7 @@ defmodule Validixir.Validations do
   ## Examples
 
       iex> Validixir.Validations.non_empty_list([1,2,3])
-      %Validixir.Success{candidate: [1,2,3]}
+      {:ok, [1,2,3]}
 
       iex> Validixir.Validations.non_empty_list([])
       %Validixir.Failure{errors: [
@@ -320,10 +320,11 @@ defmodule Validixir.Validations do
   ## Examples
 
       iex> Validixir.Validations.map(%{})
-      %Validixir.Success{candidate: %{}}
+      {:ok, %{}}
 
-      iex> Validixir.Validations.map(%Validixir.Success{candidate: 12})
-      %Validixir.Success{candidate: %Validixir.Success{candidate: 12}}
+      iex> person_struct = %Example.Person{name: "s", username: "h", email: "s@h.b", address: "s h b"}
+      iex> Validixir.Validations.map(person_struct)
+      {:ok, person_struct}
 
       iex> Validixir.Validations.map([])
       %Validixir.Failure{errors: [
@@ -342,7 +343,7 @@ defmodule Validixir.Validations do
   ## Examples
 
       iex> Validixir.Validations.map_key(%{hello: :world}, :hello)
-      %Validixir.Success{candidate: {%{hello: :world}, :hello}}
+      {:ok, {%{hello: :world}, :hello}}
 
       iex> Validixir.Validations.map_key(%{}, :hello)
       %Validixir.Failure{errors: [
@@ -362,7 +363,7 @@ defmodule Validixir.Validations do
   ## Examples
 
       iex> Validixir.Validations.nil?(nil)
-      %Validixir.Success{candidate: nil}
+      {:ok, nil}
 
       iex> Validixir.Validations.nil?(12)
       %Validixir.Failure{errors: [
@@ -381,7 +382,7 @@ defmodule Validixir.Validations do
   ## Examples
 
       iex> Validixir.Validations.not_nil(12)
-      %Validixir.Success{candidate: 12}
+      {:ok, 12}
 
       iex> Validixir.Validations.not_nil(nil)
       %Validixir.Failure{errors: [
@@ -400,10 +401,10 @@ defmodule Validixir.Validations do
   ## Examples
 
       iex> Validixir.Validations.number(12.2)
-      %Validixir.Success{candidate: 12.2}
+      {:ok, 12.2}
 
       iex> Validixir.Validations.number(12)
-      %Validixir.Success{candidate: 12}
+      {:ok, 12}
 
       iex> Validixir.Validations.number(nil)
       %Validixir.Failure{errors: [
@@ -422,7 +423,7 @@ defmodule Validixir.Validations do
   ## Examples
 
       iex> Validixir.Validations.pid(self())
-      %Validixir.Success{candidate: self()}
+      {:ok, self()}
 
       iex> Validixir.Validations.pid(12)
       %Validixir.Failure{errors: [
@@ -447,8 +448,9 @@ defmodule Validixir.Validations do
 
   ## Examples
 
-      iex> Validixir.Validations.struct(Validixir.Success.make("abc"))
-      %Validixir.Success{candidate: Validixir.Success.make("abc")}
+      iex> person_struct = %Example.Person{name: "s", username: "h", email: "s@h.b", address: "s h b"}
+      iex> Validixir.Validations.struct(person_struct)
+      {:ok, person_struct}
 
       iex> Validixir.Validations.struct(%{})
       %Validixir.Failure{errors: [
@@ -468,7 +470,7 @@ defmodule Validixir.Validations do
 
       iex> ref = make_ref()
       iex> Validixir.Validations.reference(ref)
-      %Validixir.Success{candidate: ref}
+      {:ok, ref}
 
       iex> Validixir.Validations.reference(12)
       %Validixir.Failure{errors: [
@@ -487,7 +489,7 @@ defmodule Validixir.Validations do
   ## Examples
 
       iex> Validixir.Validations.tuple({1,2,3})
-      %Validixir.Success{candidate: {1,2,3}}
+      {:ok, {1,2,3}}
 
       iex> Validixir.Validations.tuple([1,2,3])
       %Validixir.Failure{errors: [
@@ -506,7 +508,7 @@ defmodule Validixir.Validations do
   ## Examples
 
       iex> Validixir.Validations.member([1,2,3], 1)
-      %Validixir.Success{candidate: {[1,2,3], 1}}
+      {:ok, {[1,2,3], 1}}
 
       iex> Validixir.Validations.member([], 1)
       %Validixir.Failure{errors: [
@@ -537,10 +539,10 @@ defmodule Validixir.Validations do
   ## Examples
 
       iex> Validixir.Validations.not_a_member([1,2,3], 4)
-      %Validixir.Success{candidate: {[1,2,3], 4}}
+      {:ok, {[1,2,3], 4}}
 
       iex> Validixir.Validations.not_a_member([], 1)
-      %Validixir.Success{candidate: {[], 1}}
+      {:ok, {[], 1}}
 
       iex> Validixir.Validations.not_a_member([1,2,3], 1)
       %Validixir.Failure{errors: [

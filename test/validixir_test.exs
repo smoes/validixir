@@ -4,7 +4,6 @@ defmodule ValidixirTest do
 
   alias Example
   alias Validixir.Failure
-  alias Validixir.Success
   alias Validixir.Error
 
   describe "The example code" do
@@ -34,9 +33,10 @@ defmodule ValidixirTest do
       city = "New York"
 
       success = Example.Address.make(street, number, city, zip)
-      assert %Success{} = success
 
-      candidate = success.candidate
+      assert {:ok, _} = success
+      {:ok, candidate} = success
+
       assert candidate.street == street
       assert candidate.number == number
       assert candidate.zip == zip
@@ -80,8 +80,8 @@ defmodule ValidixirTest do
           Example.Person.make(name, username, email, address)
         end)
 
-      assert %Success{} = result
-      candidate = result.candidate
+      assert {:ok, _} = result
+      {:ok, candidate} = result
 
       assert candidate.name == name
       assert candidate.username == username

@@ -39,7 +39,7 @@ defmodule Validixir do
   def validation_result?(thing) do
     case thing do
       %Failure{} -> true
-      %Success{} -> true
+      {:ok, _} -> true
       _ -> false
     end
   end
@@ -52,7 +52,7 @@ defmodule Validixir do
 
       iex> success = Validixir.Success.make(0)
       iex> Validixir.map_success(success, fn a -> a + 1 end)
-      %Validixir.Success{candidate: 1}
+      {:ok, 1}
 
       iex> failure = Validixir.Failure.make([])
       iex> Validixir.map_success(failure, fn a -> a + 1 end)
@@ -62,7 +62,7 @@ defmodule Validixir do
           validation_result_t(Success.some_inner_t()),
           (Success.some_inner_t() -> any())
         ) :: validation_result_t(any())
-  def map_success(success = %Success{}, f), do: Success.map(success, f)
+  def map_success(success = {:ok, _}, f), do: Success.map(success, f)
   def map_success(failure = %Failure{}, _), do: failure
 
   @doc ~S"""
@@ -73,7 +73,7 @@ defmodule Validixir do
 
       iex> success = Validixir.Success.make(0)
       iex> Validixir.map_failure(success, fn a -> a + 1 end)
-      %Validixir.Success{candidate: 0}
+      {:ok, 0}
 
       iex> failure = Validixir.Failure.make([Validixir.Error.make(1, :hello, :hello)])
       iex> Validixir.map_failure(failure, fn err -> %Validixir.Error{ err | candidate: 2} end)
@@ -82,7 +82,7 @@ defmodule Validixir do
   @spec map_failure(validation_result_t(Success.some_inner_t()), (Error.t() -> Error.t())) ::
           validation_result_t(Success.some_inner_t())
   def map_failure(failure = %Failure{}, f), do: Failure.map(failure, f)
-  def map_failure(success = %Success{}, _), do: success
+  def map_failure(success = {:ok, _}, _), do: success
 
   @doc ~S"""
   Takes a validation result and two functions that are applied as in map_success/2 and
@@ -92,7 +92,7 @@ defmodule Validixir do
 
       iex> success = Validixir.Success.make(0)
       iex> Validixir.map(success, fn a -> a + 1 end, fn _ -> :does_nothing end)
-      %Validixir.Success{candidate: 1}
+      {:ok, 1}
 
       iex> failure = Validixir.Failure.make([Validixir.Error.make(1, :hello, :hello)])
       iex> Validixir.map(failure, fn _ -> :does_nothing end, fn err -> %Validixir.Error{ err | candidate: 2} end)
@@ -105,7 +105,7 @@ defmodule Validixir do
         ) ::
           validation_result_t(any())
   def map(f = %Failure{}, _, f_failure), do: map_failure(f, f_failure)
-  def map(s = %Success{}, f_success, _), do: map_success(s, f_success)
+  def map(s = {:ok, _}, f_success, _), do: map_success(s, f_success)
 
   @doc ~S"""
   Takes a value and lifts it in a validation result, returning a success with the value
@@ -114,7 +114,7 @@ defmodule Validixir do
   ## Examples
 
       iex> Validixir.pure(12)
-      %Validixir.Success{candidate: 12}
+      {:ok, 12}
   """
   @spec pure(Success.some_inner_t()) :: Success.t(Success.some_inner_t())
   def pure(value), do: Success.make(value)
@@ -125,7 +125,7 @@ defmodule Validixir do
   ## Examples
 
       iex> Validixir.success(12)
-      %Validixir.Success{candidate: 12}
+      {:ok, 12}
   """
   @spec success(Success.some_inner_t()) :: Success.t(Success.some_inner_t())
   def success(value), do: pure(value)
@@ -136,7 +136,7 @@ defmodule Validixir do
   ## Examples
 
       iex> Validixir.pure(12) |> Validixir.augment_contexts(Hello)
-      %Validixir.Success{candidate: 12}
+      {:ok, 12}
 
       iex> error_1 = Validixir.Error.make(1, :message, Context)
       iex> error_2 = Validixir.Error.make(2, :message, AnotherContext)
@@ -152,7 +152,7 @@ defmodule Validixir do
   """
   @spec augment_contexts(validation_result_t(Success.some_inner_t()), any()) ::
           validation_result_t(Success.some_inner_t())
-  def augment_contexts(s = %Success{}, _), do: s
+  def augment_contexts(s = {:ok, _}, _), do: s
 
   def augment_contexts(f = %Failure{}, additional_context),
     do: map_failure(f, fn error -> Error.augment_context(error, additional_context) end)
@@ -163,7 +163,7 @@ defmodule Validixir do
   ## Examples
 
       iex> Validixir.pure(12) |> Validixir.augment_messages(Hello)
-      %Validixir.Success{candidate: 12}
+      {:ok, 12}
 
       iex> error_1 = Validixir.Error.make(1, :message, Context)
       iex> error_2 = Validixir.Error.make(2, :another_message, Context)
@@ -179,7 +179,7 @@ defmodule Validixir do
   """
   @spec augment_messages(validation_result_t(Success.some_inner_t()), any()) ::
           validation_result_t(Success.some_inner_t())
-  def augment_messages(s = %Success{}, _), do: s
+  def augment_messages(s = {:ok, _}, _), do: s
 
   def augment_messages(f = %Failure{}, additional_message),
     do: map_failure(f, fn error -> Error.augment_message(error, additional_message) end)
@@ -190,7 +190,7 @@ defmodule Validixir do
   ## Examples
 
       iex> Validixir.pure(12) |> Validixir.override_messages(Hello)
-      %Validixir.Success{candidate: 12}
+      {:ok, 12}
 
       iex> error_1 = Validixir.Error.make(1, :message, Context)
       iex> error_2 = Validixir.Error.make(2, :another_message, Context)
@@ -206,7 +206,7 @@ defmodule Validixir do
   """
   @spec override_messages(validation_result_t(Success.some_inner_t()), any()) ::
           validation_result_t(Success.some_inner_t())
-  def override_messages(s = %Success{}, _), do: s
+  def override_messages(s = {:ok, _}, _), do: s
   def override_messages(f = %Failure{}, message), do: Failure.override_error_messages(f, message)
 
   @doc ~S"""
@@ -215,7 +215,7 @@ defmodule Validixir do
   ## Examples
 
       iex> Validixir.pure(12) |> Validixir.override_contexts(Hello)
-      %Validixir.Success{candidate: 12}
+      {:ok, 12}
 
       iex> error_1 = Validixir.Error.make(1, :message, Context)
       iex> error_2 = Validixir.Error.make(2, :another_message, Context)
@@ -231,7 +231,7 @@ defmodule Validixir do
   """
   @spec override_contexts(validation_result_t(Success.some_inner_t()), any()) ::
           validation_result_t(Success.some_inner_t())
-  def override_contexts(s = %Success{}, _), do: s
+  def override_contexts(s = {:ok, _}, _), do: s
   def override_contexts(f = %Failure{}, context), do: Failure.override_error_contexts(f, context)
 
   @doc ~S"""
@@ -246,7 +246,7 @@ defmodule Validixir do
       iex> s1 = Validixir.Success.make(fn a -> a + 1 end)
       iex> s2 = Validixir.Success.make(0)
       iex> Validixir.seq(s1, s2)
-      %Validixir.Success{candidate: 1}
+      {:ok, 1}
 
       iex> error = Validixir.Error.make(:hello, "not allowed", nil)
       iex> failure = Validixir.Failure.make([error])
@@ -268,7 +268,7 @@ defmodule Validixir do
   def seq(f1 = %Failure{}, f2 = %Failure{}), do: Failure.combine(f1, f2)
   def seq(f1 = %Failure{}, _), do: f1
   def seq(_, f2 = %Failure{}), do: f2
-  def seq(%Success{candidate: f}, validation_result), do: map_success(validation_result, f)
+  def seq({:ok, f}, validation_result), do: map_success(validation_result, f)
 
   @doc !"""
        Essentially a monadic bind.
@@ -278,7 +278,7 @@ defmodule Validixir do
           (Success.some_inner_t() -> validation_result_t(any()))
         ) :: validation_result_t(any())
   defp bind(failure = %Failure{}, _), do: failure
-  defp bind(%Success{candidate: candidate}, f), do: f.(candidate)
+  defp bind({:ok, candidate}, f), do: f.(candidate)
 
   @doc ~S"""
   Takes a validation result and a function.
@@ -290,7 +290,7 @@ defmodule Validixir do
   ## Examples
 
       iex> Validixir.Success.make(0) |> Validixir.and_then(fn x -> Validixir.Success.make(x + 1) end)
-      %Validixir.Success{candidate: 1}
+      {:ok, 1}
 
       iex> Validixir.Failure.make([]) |> Validixir.and_then(fn x -> x + 1 end)
       %Validixir.Failure{errors: [], message_lookup: %{}}
@@ -302,7 +302,7 @@ defmodule Validixir do
   def and_then(validation_result, f), do: bind(validation_result, f)
 
   @doc ~S"""
-  Takes a function that is called iff all validation results are successes. The call
+  Takes a function that is called if all validation results are successes. The call
   parameters are then the candidates in the respective order. The return value of this function
   call is then wrapped as a success and returned.
 
@@ -311,7 +311,7 @@ defmodule Validixir do
   ## Examples
 
       iex> Validixir.validate(fn a, b -> {a, b} end, [Validixir.Success.make(1), Validixir.Success.make(2)])
-      %Validixir.Success{candidate: {1,2}}
+      {:ok, {1,2}}
 
       iex> error1 = Validixir.Error.make(:hello, "not allowed", nil)
       iex> error2 = Validixir.Error.make(:world, "not allowed", nil)
@@ -334,7 +334,7 @@ defmodule Validixir do
   ## Examples
 
       iex> Validixir.sequence([Validixir.Success.make(1), Validixir.Success.make(2)])
-      %Validixir.Success{candidate: [1,2]}
+      {:ok, [1,2]}
 
       iex> error1 = Validixir.Error.make(:hello, "not allowed", nil)
       iex> error2 = Validixir.Error.make(:world, "not allowed", nil)
@@ -359,7 +359,7 @@ defmodule Validixir do
 
       iex> success_fn = fn c -> Validixir.Success.make(c) end
       iex> Validixir.sequence_of([1, 2], success_fn)
-      %Validixir.Success{candidate: [1,2]}
+      {:ok, [1,2]}
 
       iex> failure_fn = fn c -> [Validixir.Error.make(c, "not allowed", nil)] |> Validixir.Failure.make() end
       iex> Validixir.sequence_of([:hello, :world], failure_fn)
@@ -389,7 +389,7 @@ defmodule Validixir do
       iex> success_fn_1 = fn c -> Validixir.Success.make(c) end
       iex> success_fn_2 = fn _ -> Validixir.Success.make(12) end
       iex> Validixir.validate_all([success_fn_1, success_fn_2], 1)
-      %Validixir.Success{candidate: 1}
+      {:ok, 1}
 
       iex> failure_fn = fn c -> [Validixir.Error.make(c, "not allowed", nil)] |> Validixir.Failure.make() end
       iex> success_fn = fn _ -> Validixir.Success.make(12) end
@@ -412,7 +412,7 @@ defmodule Validixir do
       |> sequence
 
     case validated do
-      %Validixir.Success{} -> Validixir.Success.make(candidate)
+      {:ok, _} -> Validixir.Success.make(candidate)
       %Validixir.Failure{} -> validated
     end
   end

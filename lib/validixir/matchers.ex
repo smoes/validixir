@@ -17,13 +17,13 @@ defmodule Validixir.Matchers do
   """
   defmacro success() do
     quote do
-      %Validixir.Success{}
+      {:ok, _}
     end
   end
 
   defmacro success(candidate) do
     quote do
-      %Validixir.Success{candidate: unquote(candidate)}
+      {:ok, unquote(candidate)}
     end
   end
 
