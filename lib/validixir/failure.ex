@@ -8,26 +8,27 @@ defmodule Validixir.Failure do
   * A list of Errors, displaying multiple causes for the validation to fail.
   * A message lookup that is a map with all messages as keys. This lookup is
     used internally and should not be used directly.
+  * Optional meta information that is defined by the user.
   """
 
   alias __MODULE__
   alias Validixir.Error, as: Error
 
-  @type failure_t :: %Failure{errors: [Error.t()], __message_lookup: map()}
+  @type failure_t :: %Failure{errors: list(Error.t()), meta: any(), __message_lookup: map()}
   @type t :: {:error, failure_t}
   @enforce_keys [:errors, :__message_lookup]
-  defstruct [:errors, :__message_lookup]
+  defstruct [:errors, :meta, :__message_lookup]
 
   {:error}
 
   @doc ~S"""
   Smart constructor of a failure.
   """
-  @spec make(any()) :: t()
-  def make(errors) do
+  @spec make(list(Error.t()), any()) :: t()
+  def make(errors, meta \\ nil) do
     errors = List.wrap(errors)
     message_lookup = prepare___message_lookup(errors)
-    {:error, %Failure{errors: errors, __message_lookup: message_lookup}}
+    {:error, %Failure{errors: errors, meta: meta, __message_lookup: message_lookup}}
   end
 
   @doc ~S"""
@@ -139,5 +140,13 @@ defmodule Validixir.Failure do
 
     Enum.map(all, fn message -> {message, true} end)
     |> Map.new()
+  end
+
+  @doc """
+  Puts meta into the failure.
+  """
+  @spec put_meta(t(), any()) :: t()
+  def put_meta({:error, failure}, meta) do
+    {:error, %Failure{failure | meta: meta}}
   end
 end
