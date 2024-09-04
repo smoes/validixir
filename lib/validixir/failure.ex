@@ -13,9 +13,11 @@ defmodule Validixir.Failure do
   alias __MODULE__
   alias Validixir.Error, as: Error
 
-  @type t :: %Failure{errors: [Error.t()], message_lookup: map()}
-  @enforce_keys [:errors, :message_lookup]
-  defstruct [:errors, :message_lookup]
+  @type t :: %Failure{errors: [Error.t()], __message_lookup: map()}
+  @enforce_keys [:errors, :__message_lookup]
+  defstruct [:errors, :__message_lookup]
+
+  {:error}
 
   @doc ~S"""
   Smart constructor of a failure.
@@ -23,8 +25,8 @@ defmodule Validixir.Failure do
   @spec make(any()) :: t()
   def make(errors) do
     errors = List.wrap(errors)
-    message_lookup = prepare_message_lookup(errors)
-    %Failure{errors: errors, message_lookup: message_lookup}
+    message_lookup = prepare___message_lookup(errors)
+    %Failure{errors: errors, __message_lookup: message_lookup}
   end
 
   @doc ~S"""
@@ -33,7 +35,7 @@ defmodule Validixir.Failure do
   ## Examples
 
       iex> Validixir.Failure.make_from_error(12, :twelve_not_allowed, SomeContext)
-      %Validixir.Failure{errors: [%Validixir.Error{candidate: 12, message: :twelve_not_allowed, context: SomeContext}], message_lookup: %{twelve_not_allowed: true}}
+      %Validixir.Failure{errors: [%Validixir.Error{candidate: 12, message: :twelve_not_allowed, context: SomeContext}], __message_lookup: %{twelve_not_allowed: true}}
   """
   @spec make_from_error(any(), any(), any()) :: t()
   def make_from_error(candidate, message, context),
@@ -46,7 +48,7 @@ defmodule Validixir.Failure do
 
       iex> f = Validixir.Failure.make_from_error(1, :message, :context)
       iex> Validixir.Failure.map(f, fn %Validixir.Error{candidate: c} -> Validixir.Error.make(c + 1, :message_new, :context) end)
-      %Validixir.Failure{errors: [%Validixir.Error{candidate: 2, message: :message_new, context: :context}], message_lookup: %{message_new: true}}
+      %Validixir.Failure{errors: [%Validixir.Error{candidate: 2, message: :message_new, context: :context}], __message_lookup: %{message_new: true}}
   """
   @spec map(t(), (Error.t() -> Error.t())) :: t()
   def map(%Failure{errors: errors}, f), do: Enum.map(errors, f) |> make()
@@ -64,7 +66,7 @@ defmodule Validixir.Failure do
           %Validixir.Error{candidate: 1, message: :not_allowed, context: NewFailureContext},
           %Validixir.Error{candidate: 2, message: :not_allowed, context: NewFailureContext}
           ],
-        message_lookup: %{not_allowed: true}
+        __message_lookup: %{not_allowed: true}
       }
   """
   @spec override_error_contexts(t(), any()) :: t()
@@ -84,7 +86,7 @@ defmodule Validixir.Failure do
             %Validixir.Error{candidate: 1, message: :nonono, context: SomeContext},
             %Validixir.Error{candidate: 2, message: :nonono, context: SomeContext}
           ],
-          message_lookup: %{nonono: true}
+          __message_lookup: %{nonono: true}
       }
   """
   @spec override_error_messages(t(), any()) :: t()
@@ -105,7 +107,7 @@ defmodule Validixir.Failure do
             %Validixir.Error{candidate: 1, message: :not_allowed, context: SomeContext},
             %Validixir.Error{candidate: 2, message: :also_not_allowed, context: SomeContext}
           ],
-          message_lookup: %{not_allowed: true, also_not_allowed: true}
+          __message_lookup: %{not_allowed: true, also_not_allowed: true}
       }
   """
   @spec combine(t(), t()) :: t()
@@ -129,7 +131,7 @@ defmodule Validixir.Failure do
   def failure?(%Failure{}), do: true
   def failure?(_), do: false
 
-  defp prepare_message_lookup(errors) do
+  defp prepare___message_lookup(errors) do
     messages = Enum.map(errors, fn error -> error.message end)
     flat_messages = List.flatten(messages)
     all = (messages ++ flat_messages) |> Enum.uniq()

@@ -35,7 +35,7 @@ defmodule Validixir.Matchers do
 
   defmacro failure(message) do
     quote location: :keep do
-      %Validixir.Failure{message_lookup: %{unquote(message) => true}}
+      %Validixir.Failure{__message_lookup: %{unquote(message) => true}}
     end
   end
 end

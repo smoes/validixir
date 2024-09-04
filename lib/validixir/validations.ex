@@ -37,7 +37,7 @@ defmodule Validixir.Validations do
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: 12, message: :not_an_atom, context: Validixir.Validations}
           ],
-          message_lookup: %{not_an_atom: true}
+          __message_lookup: %{not_an_atom: true}
       }
 
   """
@@ -60,7 +60,7 @@ defmodule Validixir.Validations do
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: 12, message: :not_a_bitstring, context: Validixir.Validations}
           ],
-          message_lookup: %{not_a_bitstring: true}
+          __message_lookup: %{not_a_bitstring: true}
       }
 
   """
@@ -80,7 +80,7 @@ defmodule Validixir.Validations do
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: <<1::3>>, message: :not_a_binary, context: Validixir.Validations}
           ],
-          message_lookup: %{not_a_binary: true}
+          __message_lookup: %{not_a_binary: true}
       }
 
   """
@@ -100,7 +100,7 @@ defmodule Validixir.Validations do
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: nil, message: :not_a_boolean, context: Validixir.Validations}
           ],
-          message_lookup: %{not_a_boolean: true}
+          __message_lookup: %{not_a_boolean: true}
       }
 
   """
@@ -120,7 +120,7 @@ defmodule Validixir.Validations do
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: %{}, message: :not_an_exception, context: Validixir.Validations}
           ],
-          message_lookup: %{not_an_exception: true}
+          __message_lookup: %{not_an_exception: true}
       }
 
   """
@@ -140,7 +140,7 @@ defmodule Validixir.Validations do
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: 12, message: :not_a_float, context: Validixir.Validations}
           ],
-          message_lookup: %{not_a_float: true}
+          __message_lookup: %{not_a_float: true}
       }
 
   """
@@ -160,7 +160,7 @@ defmodule Validixir.Validations do
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: 12, message: :not_a_function, context: Validixir.Validations}
           ],
-          message_lookup: %{not_a_function: true}
+          __message_lookup: %{not_a_function: true}
       }
 
   """
@@ -180,7 +180,7 @@ defmodule Validixir.Validations do
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: 12.2, message: :not_an_integer, context: Validixir.Validations}
           ],
-          message_lookup: %{not_an_integer: true}
+          __message_lookup: %{not_an_integer: true}
       }
 
   """
@@ -200,14 +200,14 @@ defmodule Validixir.Validations do
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: 0, message: :not_a_positive_integer, context: Validixir.Validations}
           ],
-          message_lookup: %{not_a_positive_integer: true}
+          __message_lookup: %{not_a_positive_integer: true}
       }
 
       iex> Validixir.Validations.pos_integer(-2)
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: -2, message: :not_a_positive_integer, context: Validixir.Validations}
           ],
-          message_lookup: %{not_a_positive_integer: true}
+          __message_lookup: %{not_a_positive_integer: true}
       }
   """
   @spec pos_integer(any()) :: Core.validation_result_t(any())
@@ -226,14 +226,14 @@ defmodule Validixir.Validations do
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: 0, message: :not_a_negative_integer, context: Validixir.Validations}
           ],
-          message_lookup: %{not_a_negative_integer: true}
+          __message_lookup: %{not_a_negative_integer: true}
       }
 
       iex> Validixir.Validations.neg_integer(2)
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: 2, message: :not_a_negative_integer, context: Validixir.Validations}
           ],
-          message_lookup: %{not_a_negative_integer: true}
+          __message_lookup: %{not_a_negative_integer: true}
       }
   """
   @spec neg_integer(any()) :: Core.validation_result_t(any())
@@ -255,7 +255,7 @@ defmodule Validixir.Validations do
       %Validixir.Failure{errors: [
              %Validixir.Error{candidate: %{}, message: :not_a_list, context: Validixir.Validations}
           ],
-          message_lookup: %{not_a_list: true}
+          __message_lookup: %{not_a_list: true}
       }
   """
   @spec list(any()) :: Core.validation_result_t(any())
@@ -274,14 +274,14 @@ defmodule Validixir.Validations do
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: [1,2,3], message: :not_an_empty_list, context: Validixir.Validations}
           ],
-          message_lookup: %{not_an_empty_list: true}
+          __message_lookup: %{not_an_empty_list: true}
       }
 
       iex> Validixir.Validations.empty_list(%{})
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: %{}, message: :not_an_empty_list, context: Validixir.Validations}
           ],
-          message_lookup: %{not_an_empty_list: true}
+          __message_lookup: %{not_an_empty_list: true}
       }
   """
   @spec empty_list(any()) :: Core.validation_result_t(any())
@@ -300,14 +300,14 @@ defmodule Validixir.Validations do
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: [], message: :not_a_non_empty_list, context: Validixir.Validations}
           ],
-          message_lookup: %{not_a_non_empty_list: true}
+          __message_lookup: %{not_a_non_empty_list: true}
       }
 
       iex> Validixir.Validations.non_empty_list(%{})
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: %{}, message: :not_a_non_empty_list, context: Validixir.Validations}
           ],
-          message_lookup: %{not_a_non_empty_list: true}
+          __message_lookup: %{not_a_non_empty_list: true}
       }
   """
   @spec non_empty_list(any()) :: Core.validation_result_t(any())
@@ -330,7 +330,7 @@ defmodule Validixir.Validations do
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: [], message: :not_a_map, context: Validixir.Validations}
           ],
-          message_lookup: %{not_a_map: true}
+          __message_lookup: %{not_a_map: true}
       }
   """
   @spec map(any()) :: Core.validation_result_t(any())
@@ -349,7 +349,7 @@ defmodule Validixir.Validations do
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: {%{}, :hello}, message: :not_a_key_of_map, context: Validixir.Validations}
           ],
-          message_lookup: %{not_a_key_of_map: true}
+          __message_lookup: %{not_a_key_of_map: true}
       }
   """
   @spec map_key(map(), any()) :: Core.validation_result_t(any())
@@ -369,7 +369,7 @@ defmodule Validixir.Validations do
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: 12, message: :not_nil, context: Validixir.Validations}
           ],
-          message_lookup: %{not_nil: true}
+          __message_lookup: %{not_nil: true}
       }
   """
   @spec nil?(any()) :: Core.validation_result_t(any())
@@ -388,7 +388,7 @@ defmodule Validixir.Validations do
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: nil, message: :is_nil, context: Validixir.Validations}
           ],
-          message_lookup: %{is_nil: true}
+          __message_lookup: %{is_nil: true}
       }
   """
   @spec not_nil(any()) :: Core.validation_result_t(any())
@@ -410,7 +410,7 @@ defmodule Validixir.Validations do
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: nil, message: :not_a_number, context: Validixir.Validations}
           ],
-          message_lookup: %{not_a_number: true}
+          __message_lookup: %{not_a_number: true}
       }
   """
   @spec number(any()) :: Core.validation_result_t(any())
@@ -429,7 +429,7 @@ defmodule Validixir.Validations do
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: 12, message: :not_a_pid, context: Validixir.Validations}
           ],
-          message_lookup: %{not_a_pid: true}
+          __message_lookup: %{not_a_pid: true}
       }
   """
   @spec pid(any()) :: Core.validation_result_t(any())
@@ -456,7 +456,7 @@ defmodule Validixir.Validations do
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: %{}, message: :not_a_struct, context: Validixir.Validations}
           ],
-          message_lookup: %{not_a_struct: true}
+          __message_lookup: %{not_a_struct: true}
       }
   """
   @spec struct(any()) :: Core.validation_result_t(any())
@@ -476,7 +476,7 @@ defmodule Validixir.Validations do
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: 12, message: :not_a_reference, context: Validixir.Validations}
           ],
-          message_lookup: %{not_a_reference: true}
+          __message_lookup: %{not_a_reference: true}
       }
   """
   @spec reference(any()) :: Core.validation_result_t(any())
@@ -495,7 +495,7 @@ defmodule Validixir.Validations do
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: [1,2,3], message: :not_a_tuple, context: Validixir.Validations}
           ],
-          message_lookup: %{not_a_tuple: true}
+          __message_lookup: %{not_a_tuple: true}
       }
   """
   @spec tuple(any()) :: Core.validation_result_t(any())
@@ -514,14 +514,14 @@ defmodule Validixir.Validations do
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: {[], 1}, message: :not_a_member, context: Validixir.Validations}
           ],
-          message_lookup: %{not_a_member: true}
+          __message_lookup: %{not_a_member: true}
       }
 
       iex> Validixir.Validations.member([1,2,3], 12)
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: {[1,2,3], 12}, message: :not_a_member, context: Validixir.Validations}
           ],
-          message_lookup: %{not_a_member: true}
+          __message_lookup: %{not_a_member: true}
       }
   """
   @spec member(Enum.t(), any()) :: Core.validation_result_t(any())
@@ -548,7 +548,7 @@ defmodule Validixir.Validations do
       %Validixir.Failure{errors: [
             %Validixir.Error{candidate: {[1,2,3], 1}, message: :is_a_member, context: Validixir.Validations}
           ],
-          message_lookup: %{is_a_member: true}
+          __message_lookup: %{is_a_member: true}
       }
   """
   @spec not_a_member(Enum.t(), any()) :: Core.validation_result_t(any())
