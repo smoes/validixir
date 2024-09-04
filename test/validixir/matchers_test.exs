@@ -13,7 +13,7 @@ defmodule Validixir.MatchersTest do
 
       res =
         case failure do
-          failure(:message_1) -> true
+          {:error, failure(:message_1)} -> true
           _ -> false
         end
 
@@ -21,7 +21,7 @@ defmodule Validixir.MatchersTest do
 
       res =
         case failure do
-          failure(:message_2) -> true
+          {:error, failure(:message_2)} -> true
           _ -> false
         end
 
@@ -29,7 +29,7 @@ defmodule Validixir.MatchersTest do
 
       res =
         case failure do
-          failure(:message_3) -> true
+          {:error, failure(:message_3)} -> true
           _ -> false
         end
 
@@ -45,7 +45,7 @@ defmodule Validixir.MatchersTest do
 
       res =
         case failure do
-          failure(:message_1) -> true
+          {:error, failure(:message_1)} -> true
           _ -> false
         end
 
@@ -53,7 +53,7 @@ defmodule Validixir.MatchersTest do
 
       res =
         case failure do
-          failure([:index, :message_1]) -> true
+          {:error, failure(:message_1)} -> true
           _ -> false
         end
 
@@ -71,7 +71,7 @@ defmodule Validixir.MatchersTest do
 
       res =
         case failure do
-          failure() -> true
+          {:error, failure()} -> true
           _ -> false
         end
 
@@ -79,7 +79,7 @@ defmodule Validixir.MatchersTest do
 
       res =
         case Validixir.success(1) do
-          failure() -> true
+          {:error, failure()} -> true
           _ -> false
         end
 

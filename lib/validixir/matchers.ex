@@ -10,9 +10,9 @@ defmodule Validixir.Matchers do
       case validation_result do
         success(21) -> ...          # matches a success with candidate 21
         success() -> ...            # matches a success
-        failure(:my_error) -> ...   # matches a failure that has the message
+        {:error, failure(:my_error)} -> ...   # matches a failure that has the message
                                     # :my_error somewhere in errors
-        failure() -> ...            # matches a failure
+        {:error, failure()} -> ...            # matches a failure
       end
   """
   defmacro success() do
