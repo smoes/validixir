@@ -1,6 +1,6 @@
 defmodule Validixir.Error do
   @moduledoc """
-  Module containing data definition and functionality concering an Error.
+  Module containing data definition and functionality concerning an Error.
   An Error is a struct representing a concrete error in validation.
 
   An Error consists of the following:

@@ -1,25 +1,19 @@
 defmodule Validixir.Success do
   @moduledoc """
-  Module containing data definition and functionality concering a Success.
-  An Succes is a struct representing a successful validation.
+  Module containing data definition and functionality concerning a Success.
+  A Success is a :ok tuple representing a successful validation of a candidate.
 
-  A Success consists of the following:
-
-  * A candidate, representing the value that was validated.
+  {:ok, candidate}
   """
 
-  alias __MODULE__
-
   @type some_inner_t :: any()
-  @type t(inner_t) :: %Success{candidate: inner_t}
-  @enforce_keys [:candidate]
-  defstruct [:candidate]
+  @type t(inner_t) :: {:ok, inner_t}
 
   @doc ~S"""
   Smart constructor of a success.
   """
   @spec make(some_inner_t()) :: t(some_inner_t())
-  def make(candidate), do: %Success{candidate: candidate}
+  def make(candidate), do: {:ok, candidate}
 
   @doc ~S"""
   Applies a function to the candidate of a success.
@@ -27,10 +21,10 @@ defmodule Validixir.Success do
   ## Examples
 
       iex> Validixir.Success.map(Validixir.Success.make(0), fn a -> a + 1 end)
-      %Validixir.Success{candidate: 1}
+      {:ok, 1}
   """
   @spec map(t(some_inner_t()), (some_inner_t() -> any())) :: t(any())
-  def map(%Success{candidate: candidate}, f), do: f.(candidate) |> make()
+  def map({:ok, candidate}, f), do: f.(candidate) |> make()
 
   @doc ~S"""
   Returns true if a value is a success.
@@ -46,6 +40,6 @@ defmodule Validixir.Success do
       true
   """
   @spec success?(any()) :: boolean()
-  def success?(%Success{}), do: true
+  def success?({:ok, _}), do: true
   def success?(_), do: false
 end

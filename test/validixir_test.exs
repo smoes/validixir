@@ -4,7 +4,6 @@ defmodule ValidixirTest do
 
   alias Example
   alias Validixir.Failure
-  alias Validixir.Success
   alias Validixir.Error
 
   describe "The example code" do
@@ -14,12 +13,12 @@ defmodule ValidixirTest do
       zip = nil
       city = nil
 
-      failure = Example.Address.make(street, number, zip, city)
-      assert %Failure{} = failure
+      failure = {:error, inner_failure} = Example.Address.make(street, number, zip, city)
+      assert {:error, %Failure{}} = failure
 
       context = [Example.Address, Validixir.Validations]
 
-      assert failure.errors == [
+      assert inner_failure.errors == [
                Error.make(street, :not_a_binary, context),
                Error.make(number, :not_a_positive_integer, context),
                Error.make(zip, :not_a_binary, context),
@@ -34,9 +33,10 @@ defmodule ValidixirTest do
       city = "New York"
 
       success = Example.Address.make(street, number, city, zip)
-      assert %Success{} = success
 
-      candidate = success.candidate
+      assert {:ok, _} = success
+      {:ok, candidate} = success
+
       assert candidate.street == street
       assert candidate.number == number
       assert candidate.zip == zip
@@ -50,9 +50,11 @@ defmodule ValidixirTest do
       address = %{}
 
       failure = Example.Person.make(name, username, email, address)
-      assert %Failure{} = failure
+      assert {:error, %Failure{}} = failure
 
-      assert failure.errors == [
+      {:error, inner_failure} = failure
+
+      assert inner_failure.errors == [
                Error.make(name, :not_a_binary, [Example.Person, Validixir.Validations]),
                Error.make(username, :longer_than_10, Example.Person),
                Error.make(email, :not_an_email, Example.Person),
@@ -80,8 +82,8 @@ defmodule ValidixirTest do
           Example.Person.make(name, username, email, address)
         end)
 
-      assert %Success{} = result
-      candidate = result.candidate
+      assert {:ok, _} = result
+      {:ok, candidate} = result
 
       assert candidate.name == name
       assert candidate.username == username

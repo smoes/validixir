@@ -10,20 +10,20 @@ defmodule Validixir.Matchers do
       case validation_result do
         success(21) -> ...          # matches a success with candidate 21
         success() -> ...            # matches a success
-        failure(:my_error) -> ...   # matches a failure that has the message
+        {:error, failure(:my_error)} -> ...   # matches a failure that has the message
                                     # :my_error somewhere in errors
-        failure() -> ...            # matches a failure
+        {:error, failure()} -> ...            # matches a failure
       end
   """
   defmacro success() do
     quote do
-      %Validixir.Success{}
+      {:ok, _}
     end
   end
 
   defmacro success(candidate) do
     quote do
-      %Validixir.Success{candidate: unquote(candidate)}
+      {:ok, unquote(candidate)}
     end
   end
 
@@ -35,7 +35,7 @@ defmodule Validixir.Matchers do
 
   defmacro failure(message) do
     quote location: :keep do
-      %Validixir.Failure{message_lookup: %{unquote(message) => true}}
+      %Validixir.Failure{__message_lookup: %{unquote(message) => true}}
     end
   end
 end
