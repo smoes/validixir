@@ -17,6 +17,7 @@ defmodule Validixir.Failure do
   @type failure_t :: %Failure{errors: list(Error.t()), meta: any(), __message_lookup: map()}
   @type t :: {:error, failure_t}
   @enforce_keys [:errors, :__message_lookup]
+  @derive {Inspect, except: [:__message_lookup]}
   defstruct [:errors, :meta, :__message_lookup]
 
   {:error}
